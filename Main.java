@@ -93,6 +93,7 @@ public class Main extends Application {
 		Scanner s = null;
 		String id="";
 		String [] quals;
+		String in="";
 		try {
 			s=new Scanner(new File("courses.mer"));
 			s.nextLine();
@@ -100,13 +101,15 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 		while(s.hasNext()){
-			quals=s.nextLine().split("\",\"");
+			in=s.nextLine();
+			quals=in.substring(1,in.length()-1).split("\",\"");
 			students.add(new Student(quals));
 			id=quals[3];
 			do{
 				students.get(students.size()-1).addClass(quals);
-				quals=s.nextLine().split("\",\"");
-			}while(id.equals(quals[3]));
+				in=s.nextLine();
+				quals=in.substring(1,in.length()-1).split("\",\"");
+			}while(id.equals(quals[3])&&s.hasNext());
 		}
 	}
 	public static void main(String[] args) {

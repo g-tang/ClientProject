@@ -16,4 +16,7 @@ public class Class implements Comparator{
 	public int compare(Object a, Object b) {
 		return ((Class)a).pd-((Class)b).pd;
 	}
+	public String toString(){
+		return name+ " "+pd+ " "+semester+teacher;
+	}
 }
