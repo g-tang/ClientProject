@@ -116,7 +116,18 @@ public class Main extends Application {
 			students.get(students.size()-1).sortClass();
 		}
 	}
+	
+	public static Student searchStudent(String find, ArrayList<Student> students){
+		for(int i=0; i<students.size(); i++){
+			if(students.get(i).getID().equals(find)){
+				return students.get(i);
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		launch(args);
+		
+		
 	}
 }
