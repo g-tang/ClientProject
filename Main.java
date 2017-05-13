@@ -117,9 +117,9 @@ public class Main extends Application {
 		}
 	}
 	
-	public static Student searchStudent(String find, ArrayList<Student> students){
+	public static Student searchStudent(String findThisID, ArrayList<Student> students){
 		for(int i=0; i<students.size(); i++){
-			if(students.get(i).getID().equals(find)){
+			if(students.get(i).getID().equals(findThisID)){
 				return students.get(i);
 			}
 		}
