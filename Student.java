@@ -1,6 +1,8 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 //CRSTITLE,DUR,FIRST,ID,LAST,PD,TCHF,TCHL
 public class Student {
 	private String fName;
@@ -13,7 +15,6 @@ public class Student {
 		fName=s[2];
 		lName=s[4];
 		id=Integer.parseInt(s[3]);
-		addClass(s);
 	}
 	public void addClass(String[] s){
 
@@ -34,4 +35,10 @@ public class Student {
 		}
 		return "";
 	}
+	public void sortClass(){
+		Collections.sort((List<Class>)schedule1);
+		Collections.sort((List<Class>)schedule2);
+		
+	}
+	
 }

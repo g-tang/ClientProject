@@ -1,8 +1,7 @@
 package application;
 
-import java.util.Comparator;
 
-public class Class implements Comparator{
+public class Class implements Comparable{
 	private String name;
 	private Teacher teacher;
 	private int pd;
@@ -13,10 +12,10 @@ public class Class implements Comparator{
 		semester=s;
 		pd=p;
 	}
-	public int compare(Object a, Object b) {
-		return ((Class)a).pd-((Class)b).pd;
-	}
 	public String toString(){
-		return name+ " "+pd+ " "+semester+teacher;
+		return pd+ "\t"+semester+teacher;
+	}
+	public int compareTo(Object arg0) {
+		return pd-((Class) arg0).pd;
 	}
 }

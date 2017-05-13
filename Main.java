@@ -95,21 +95,25 @@ public class Main extends Application {
 		String [] quals;
 		String in="";
 		try {
-			s=new Scanner(new File("courses.mer"));
+			s=new Scanner(new File("MiniTestCourse.txt"));
 			s.nextLine();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		in=s.nextLine();
+		quals=in.substring(1,in.length()-1).split("\",\"");
 		while(s.hasNext()){
-			in=s.nextLine();
-			quals=in.substring(1,in.length()-1).split("\",\"");
 			students.add(new Student(quals));
 			id=quals[3];
+			students.get(students.size()-1).addClass(quals);
+			in=s.nextLine();
+			quals=in.substring(1,in.length()-1).split("\",\"");
 			do{
 				students.get(students.size()-1).addClass(quals);
 				in=s.nextLine();
 				quals=in.substring(1,in.length()-1).split("\",\"");
 			}while(id.equals(quals[3])&&s.hasNext());
+			students.get(students.size()-1).sortClass();
 		}
 	}
 	public static void main(String[] args) {

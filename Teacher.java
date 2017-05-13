@@ -12,7 +12,7 @@ public class Teacher {
 		
 	}
 	public String toString(){
-		return " "+first+" "+last;
+		return " "+first+"\t"+last;
 	}
 	
 }
