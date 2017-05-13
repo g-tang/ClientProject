@@ -6,9 +6,9 @@ public class Class implements Comparable{
 	private Teacher teacher;
 	private int pd;
 	private String semester;
-	public Class(String n, String s, int p, String l, String f){
+	public Class(String n, String s, int p, String f, String l){
 		name=n;
-		teacher=new Teacher(l,f);
+		teacher=new Teacher(f,l);
 		semester=s;
 		pd=p;
 	}
