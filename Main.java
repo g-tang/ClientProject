@@ -20,23 +20,14 @@ public class Main extends Application {
 	ArrayList<Student> students=new ArrayList<Student>();
 	ArrayList<Teacher> teachers=new ArrayList<Teacher>();
 	String ID="";
+	Student focus=new Student("\"Hon English 10a\",\"S1\",\"Sri Lahari\",\"123438\",\"Tammera\",\"05\",\"Lisa\",\"Kellert\"".split("\",\""));
+	Font oxygen30=new Font("Oxygen",30);
+	Font oxygen50=new Font("Oxygen", 50);
 	public void start(Stage s) {
 		try {
-			Font oxygen20=new Font("Oxygen",20);
-			Font oxygen50=new Font("Oxygen", 50);
-			//Please Wait/Initial Window
 			s.setMaximized(true);
-			BorderPane pleaseWaitR = new BorderPane();
-			Scene pleaseWait = new Scene(pleaseWaitR,s.getWidth(),s.getHeight());
-			Text pwText=new Text("Please wait while your data is loaded");
-			pwText.setFont(oxygen50);
-			pleaseWaitR.setCenter(pwText);
-			
-			s.setTitle("Media Center Sign In");
-			s.setScene(pleaseWait);
 			s.show();
-			parseData();
-			Thread.sleep(2000);
+			s.setTitle("Media Center Sign In");
 			
 			
 			//Enter Your Student ID Interface Elements
@@ -46,12 +37,13 @@ public class Main extends Application {
 			g.setVgap(s.getHeight()/10);
 			enterIDR.setCenter(g);
 			Scene enterID=new Scene(enterIDR, s.getWidth(),s.getHeight());
+			
 			Text promptID=new Text("Enter your student ID number below \n or scan your card.");
 			promptID.setFont(oxygen50);
 			g.add(promptID, 3, 2,6,1);
 			
 			TextField inID=new TextField();
-			inID.setFont(oxygen20);
+			inID.setFont(oxygen30);
 			inID.setPromptText("Enter your student ID #");
 			g.add(inID, 2, 5, 7,1);
 			
@@ -59,29 +51,45 @@ public class Main extends Application {
 			nextEnterID.setFont(oxygen50);
 			g.add(nextEnterID, 4, 6,3,1);
 			
+			
 			//Pick your class Interface Elements
 			BorderPane pickClassR=new BorderPane();
 			Scene pickClass=new Scene(pickClassR, s.getWidth(), s.getHeight());
-//			GridPane h=new GridPane();
-//			h.setHgap(s.getWidth()/10);
-//			h.setVgap(s.getHeight()/10);
-//			pickClassR.setLeft(h);
-//			
-//			ArrayList<Button> classButtons=new ArrayList<Button>();
-//			for(int i=1;i<=8;i++){
-//				try{
-//					classButtons.get(i-1).setFont(oxygen50);
-//					h.add(classButtons.get(i-1), 1, i+1, 5, 1);
-//				}catch(Exception e){}
-//			}
+			GridPane h=new GridPane();
+			h.setHgap(s.getWidth()/50);
+			h.setVgap(s.getHeight()/50);
+			pickClassR.setLeft(h);
+			
+			ArrayList<Button> classButtons=new ArrayList<Button>();
+			
+			Text promptPickClass=new Text();
+			promptPickClass.setFont(oxygen50);
+			pickClassR.setTop(promptPickClass);
+			
+			
 			//Listeners
 			nextEnterID.setOnAction(e->{
-				ID=inID.getText();
-				System.out.println(ID);
-				s.setScene(pickClass);
+				try{
+					ID=inID.getText();
+					focus=searchStudent(ID);
+					promptPickClass.setText("Hello, "+focus.getFirstName()+". Please pick the class you are in right now.");
+					for(Class c:focus.getSchedule(1)){
+						try{
+							classButtons.add(new Button(c.getClassName()));
+							classButtons.get(classButtons.size()-1).setFont(oxygen30);
+							h.add(classButtons.get(classButtons.size()-1), 1,classButtons.size(), 5, 1);
+						}catch(Exception f){System.out.println("Error");}
+					}
+					s.setScene(pickClass);
+				}catch(Exception d){
+					Text idError=new Text("Please enter a valid Student ID");
+					idError.setFont(oxygen50);
+					g.add(idError, 3, 3,6,1);
+				}
 			});
 			
 			//Actual Main
+			parseData();
 			s.setScene(enterID);
 			
 			
@@ -89,13 +97,14 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
+
 	public void parseData(){
 		Scanner s = null;
 		String id="";
 		String [] quals;
 		String in="";
 		try {
-			s=new Scanner(new File("MiniTestCourse.txt"));
+			s=new Scanner(new File("courses.mer"));
 			s.nextLine();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -117,12 +126,13 @@ public class Main extends Application {
 		}
 	}
 	
-	public static Student searchStudent(String findThisID, ArrayList<Student> students){
-		for(int i=0; i<students.size(); i++){
-			if(students.get(i).getID().equals(findThisID)){
-				return students.get(i);
+	public Student searchStudent(String findThisID){
+		for(Student s: students){
+			if(s.getID().equals(findThisID)){
+				return s;
 			}
 		}
+		return null;
 	}
 	
 	public static void main(String[] args) {

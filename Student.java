@@ -60,8 +60,7 @@ public class Student {
 	public ArrayList<Class> getSchedule(int sem){
 		if(sem==1){
 			return schedule1;
-		}else if(sem==2){
-			return schedule2;
 		}
+		return schedule2;
 	}
 }
