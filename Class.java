@@ -15,7 +15,7 @@ public class Class implements Comparable{
 	}
 	
 	public String toString(){
-		return pd+ "\t"+semester+teacher;
+		return pd+ "\t"+name+"\t"+teacher;
 	}
 	
 	public int compareTo(Object arg0) {
@@ -29,7 +29,9 @@ public class Class implements Comparable{
 	public String getClassName(){
 		return name;
 	}
-	
+	public Teacher getTeacher(){
+		return teacher;
+	}
 	public String getSemester(){
 		return semester;
 	}
