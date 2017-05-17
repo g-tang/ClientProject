@@ -1,10 +1,13 @@
 package application;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 //CRSTITLE,DUR,FIRST,ID,LAST,PD,TCHF,TCHL
 public class Student {
 	private String fName;
@@ -47,10 +50,40 @@ public class Student {
 		
 	}
 	
-	public String getLastName(){
-		return lName;
+	public String getFullName(){
+		return fName+ " "+lName;
 	}
-	
+	public static Teacher getTheoreticalTeacher(ArrayList<Class> c){
+		ArrayList<String[]> bellSchedule=new ArrayList<String[]>();
+		Date d=new Date();
+		try {
+			Scanner s=new Scanner(new File("BellSchedule"));
+			while(s.hasNextLine()){
+				bellSchedule.add(s.nextLine().split(":"));
+			}
+			for(int i=0;i<bellSchedule.size();i++){
+				if(d.getHours()<=Integer.parseInt(bellSchedule.get(i)[0])){
+					return(searchClass(c, i).getTeacher());
+				}else if(d.getHours()==Integer.parseInt(bellSchedule.get(i)[0])){
+					if(d.getMinutes()<=Integer.parseInt(bellSchedule.get(i)[1])){
+						return(searchClass(c,i).getTeacher());
+					}
+				}
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	private static Class searchClass(ArrayList<Class> classes, int pd){
+		for(Class c:classes){
+			if(c.getPd()==pd){
+				return c;
+			}
+		}
+		return null;
+	}
 	public String getFirstName(){
 		return fName;
 	}

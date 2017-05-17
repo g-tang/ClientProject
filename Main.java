@@ -33,11 +33,13 @@ import javafx.scene.text.TextAlignment;
 
 public class Main extends Application {
 	ArrayList<Student> students=new ArrayList<Student>();
-	ArrayList<Teacher> teachers=new ArrayList<Teacher>(Arrays.asList(new Teacher("person", "a"),new Teacher("person", "b")));
+	ArrayList<Teacher> teachers=new ArrayList<Teacher>(Arrays.asList(new Teacher("person", "a","rabhybhav"),new Teacher("person", "b","abvhih")));
 	ArrayList<String> reasons=new ArrayList<String>(Arrays.asList("Reason 1","Reason 2","Reason 3","Reason 4", "etc."));
 	String ID="";
 	Student focus;
-	Teacher notify=new Teacher("","");
+	Teacher notify=new Teacher("","","");
+	static Teacher administrator=new Teacher("","","");
+	Teacher theoretical=new Teacher("","","");
 	String reason="";
 	Font oxygen30=new Font("Oxygen",30);
 	Font oxygen50=new Font("Oxygen", 50);
@@ -74,6 +76,10 @@ public class Main extends Application {
 			enterIDToPickClass.setFont(oxygen50);
 			g.add(enterIDToPickClass, 4, 6,3,1);
 			
+			Text idError=new Text("Please enter a valid Student ID");
+			idError.setFont(oxygen30);
+			idError.setVisible(false);
+			g.add(idError, 3, 3,6,1);
 			
 			//Pick your class Elements
 			BorderPane pickClassR=new BorderPane();
@@ -184,7 +190,9 @@ public class Main extends Application {
 			cancelClose.setFont(oxygen50);
 			k.add(cancelClose, 2, 6);
 			
-			//Listeners
+		//Listeners
+			
+			//Enter ID
 			enterIDToPickClass.setOnAction(e->{
 				try{
 					ID=inID.getText();
@@ -199,14 +207,75 @@ public class Main extends Application {
 					h.add(classesList, 5, 1);
 					s.setScene(pickClass);
 				}catch(Exception d){
-					Text idError=new Text("Please enter a valid Student ID");
-					idError.setFont(oxygen30);
-					g.add(idError, 3, 3,6,1);
+					idError.setVisible(true);
 				}
 			});
 			inID.setOnAction(e->{
 				enterIDToPickClass.fire();
 			});
+			
+			//Pick Class
+			pickClassToOtherTeacher.setOnAction(e->{
+				s.setScene(otherTeacher);
+			});
+			pickClassToEnterID.setOnAction(e->{
+				inID.clear();
+				ID="";
+				s.setScene(enterID);	
+			});
+			classesList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Class>(){
+				public void changed(ObservableValue<? extends Class> arg0, Class old, Class newClass) {
+					try{
+					notify=newClass.getTeacher();
+					}catch(Exception e){}
+					s.setScene(pickReasons);
+					listReasons.getSelectionModel().clearSelection();
+					submit.setDisable(true);
+				}
+			});
+			
+			//Pick Other Teacher
+			otherTeacherToPickClass.setOnAction(e->{
+				s.setScene(pickClass);
+			});
+			listTeacher.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Teacher>(){
+				public void changed(ObservableValue<? extends Teacher> arg0, Teacher old, Teacher newTeach) {
+					notify=newTeach;
+					s.setScene(pickReasons);
+					submit.setDisable(true);
+					listReasons.getSelectionModel().clearSelection();
+				}
+			});
+			
+			//Pick Reasons
+			reasonsToOtherTeacher.setOnAction(e ->{
+				s.setScene(pickClass);
+			});
+			listReasons.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
+				public void changed(ObservableValue<? extends String> arg0, String old, String newReason) {
+					reason=newReason;
+					submit.setDisable(false);
+				}
+			});
+			submit.setOnAction(e->{
+				theoretical=Student.getTheoreticalTeacher(focus.getSchedule(1));
+				System.out.println("Notify: "+notify);
+				System.out.println("Theoretical: "+theoretical);
+				theoretical=theoretical.findTeacher(teachers);
+				notify=notify.findTeacher(teachers);
+				if(theoretical.toString().equals(notify.toString())){
+					notify.sendEmail(new File("NormalEmail"), theoretical, notify, focus);
+				}else{
+					notify.sendEmail(new File("SignedPassEmail"), theoretical, notify, focus);
+					theoretical.sendEmail(new File("TheoreticalEmail"), theoretical, notify, focus);
+				}
+				administrator.sendEmail(new File("AdminEmail"), theoretical, notify, focus);
+				writeToDrive("");
+				s.setScene(enterID);
+				idError.setVisible(false);
+				inID.clear();
+			});
+			//Close Program
 			enterPWordToClose.setOnAction(e->{
 				close.fire();
 			});
@@ -223,52 +292,6 @@ public class Main extends Application {
 				inID.clear();
 				s.setScene(enterID);
 			});
-			pickClassToOtherTeacher.setOnAction(e->{
-				s.setScene(otherTeacher);
-			});
-			otherTeacherToPickClass.setOnAction(e->{
-				s.setScene(pickClass);
-			});
-			pickClassToEnterID.setOnAction(e->{
-				inID.clear();
-				ID="";
-				s.setScene(enterID);	
-			});
-			reasonsToOtherTeacher.setOnAction(e ->{
-				s.setScene(pickClass);
-			});
-			submit.setOnAction(e->{
-				//notify.sendEmail("");
-				writeToDrive("");
-				s.setScene(enterID);
-				inID.clear();
-			});
-			listTeacher.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Teacher>(){
-				public void changed(ObservableValue<? extends Teacher> arg0, Teacher old, Teacher newTeach) {
-					notify=newTeach;
-					s.setScene(pickReasons);
-					submit.setDisable(true);
-					listReasons.getSelectionModel().clearSelection();
-				}
-			});
-			classesList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Class>(){
-				public void changed(ObservableValue<? extends Class> arg0, Class old, Class newClass) {
-					try{
-					notify=newClass.getTeacher();
-					}catch(Exception e){
-					}
-					System.out.println(notify);
-					s.setScene(pickReasons);
-					listReasons.getSelectionModel().clearSelection();
-					submit.setDisable(true);
-				}
-			});
-			listReasons.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
-				public void changed(ObservableValue<? extends String> arg0, String old, String newReason) {
-					reason=newReason;
-					submit.setDisable(false);
-				}
-			});
 			s.setOnCloseRequest(e->{
 				s.setScene(adminToClose);
 				e.consume();
@@ -281,6 +304,9 @@ public class Main extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	public static Teacher getAdmin(){
+		return administrator;
 	}
 	public void parseData(){
 		Scanner s = null;
@@ -320,10 +346,7 @@ public class Main extends Application {
 		}
 		return null;
 	}
-	
 	public static void main(String[] args) {
 		launch(args);
-		
-		
 	}
 }

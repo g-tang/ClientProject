@@ -9,7 +9,7 @@ public class Class implements Comparable{
 	
 	public Class(String n, String s, int p, String f, String l){
 		name=n;
-		teacher=new Teacher(f,l);
+		teacher=new Teacher(f,l,"");
 		semester=s;
 		pd=p;
 	}
