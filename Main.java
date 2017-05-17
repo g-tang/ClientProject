@@ -335,6 +335,23 @@ public class Main extends Application {
 			students.get(students.size()-1).sortClass();
 		}
 	}
+	public static ArrayList<Teacher> getTeacherInfo(File fileName){
+		ArrayList<Teacher> teachers = new ArrayList<Teacher>();
+		try{
+			Scanner kb = new Scanner(fileName);	
+			while(kb.hasNextLine()){
+				String email = kb.nextLine();
+				String[] emailList = email.split("_");
+				String first = emailList[0];
+				String end = emailList[emailList.length-1];
+				String last = end.substring(0, end.indexOf("@"));
+				teachers.add(new Teacher(first, last, email));
+			}
+			kb.close();
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
+		}return teachers;
+	}
 	public void writeToDrive(String s){
 		
 	}
