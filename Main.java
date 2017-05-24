@@ -33,7 +33,7 @@ import javafx.scene.text.TextAlignment;
 
 public class Main extends Application {
 	static ArrayList<Student> students=new ArrayList<Student>();
-	static ArrayList<Teacher> teachers=Teacher.getTeacherInfo(new File("TeacherEmails.txt"));
+	static ArrayList<Teacher> teachers=new ArrayList<Teacher>();
 	static ArrayList<String> reasons=new ArrayList<String>();
 	static String courseFile="";
 	static String teacherFile="";
@@ -45,12 +45,14 @@ public class Main extends Application {
 	static String fromEmailPassword="";
 	static int semester=0;
 	Teacher notify=new Teacher("","","");
-	static Teacher administrator=null;
+	static Teacher administrator=new Teacher("","","");
 	Teacher theoretical=new Teacher("","","");
 	String reason="";
 	Font oxygen30=new Font("Oxygen",30);
 	Font oxygen50=new Font("Oxygen", 50);
 	boolean toClose=false;
+	static boolean validInit=true;
+	static Scene settings;
 	public static void setConfig(){
 		try {
 			Scanner s=new Scanner(new File("config"));
@@ -58,18 +60,23 @@ public class Main extends Application {
 			administrator=new Teacher("","",s.nextLine());
 			fromEmail=s.nextLine();
 			fromEmailPassword=s.nextLine();
+			EmailUtil.setFrom(fromEmail, fromEmailPassword);
 			semester=Integer.parseInt(s.nextLine());
 			courseFile=s.nextLine();
-			teachers=Teacher.getTeacherInfo(new File(s.nextLine()));
+			parseData(courseFile);
+			teacherFile=s.nextLine();
+			teachers=Teacher.getTeacherInfo(new File(teacherFile));
 			reasonFile=s.nextLine();
 			Scanner q=new Scanner(new File(reasonFile));
+			reasons=new ArrayList<String>();
 			while(q.hasNextLine()){
 				reasons.add(q.nextLine());
 			}
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// show settings screen
-			e.printStackTrace();
+			validInit=false;
 		}
+		System.out.println("complete");
 	}
 	public void start(Stage s) {
 		try {
@@ -82,11 +89,185 @@ public class Main extends Application {
 			s.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 			Platform.setImplicitExit(false);
 			s.show();
+			
 			System.out.println(s.getWidth());
 			System.out.println(s.getHeight());
 			Date q=new Date();
 			File log=new File(q.getMonth()+"_"+q.getDate()+"MCSignInLog");
 			PrintWriter pw=new PrintWriter(log);
+			
+			//Settings
+			Pane settingsGrid=new Pane();
+			settings=new Scene(settingsGrid, s.getWidth(), s.getHeight());
+			
+			Text promptChangePassword=new Text("Change Password:");
+			promptChangePassword.setFont(oxygen30);
+			promptChangePassword.setX(200);
+			promptChangePassword.setY(200);
+			settingsGrid.getChildren().add(promptChangePassword);
+			
+			Text promptNewPWord1=new Text("Enter new password below:");
+			promptNewPWord1.setFont(oxygen30);
+			promptNewPWord1.setX(200);
+			promptNewPWord1.setY(250);
+			settingsGrid.getChildren().add(promptNewPWord1);
+			
+			PasswordField newPassword1=new PasswordField();
+			newPassword1.setFont(oxygen30);
+			newPassword1.setPromptText("Enter your new password");
+			newPassword1.setMinSize(300, 50);
+			newPassword1.setLayoutX(200);
+			newPassword1.setLayoutY(300);
+			settingsGrid.getChildren().add(newPassword1);
+			
+			PasswordField newPassword2=new PasswordField();
+			newPassword2.setFont(oxygen30);
+			newPassword2.setPromptText("Re-enter your password");
+			newPassword2.setMinSize(300, 50);
+			newPassword2.setLayoutX(200);
+			newPassword2.setLayoutY(400);
+			settingsGrid.getChildren().add(newPassword2);
+			
+			Button goToBellSchedule=new Button("Edit Bell Schedule");
+			goToBellSchedule.setFont(oxygen30);
+			goToBellSchedule.setLayoutX(200);
+			goToBellSchedule.setLayoutY(500);
+			settingsGrid.getChildren().add(goToBellSchedule);
+			
+			Text promptAdminEmail=new Text("Enter your administrator's email address:");
+			promptAdminEmail.setFont(oxygen30);
+			promptAdminEmail.setX(200);
+			promptAdminEmail.setY(600);
+			settingsGrid.getChildren().add(promptAdminEmail);
+			
+			TextField enterAdminEmail=new TextField(administrator.getEmail());
+			enterAdminEmail.setPromptText("Administrator Email");
+			enterAdminEmail.setFont(oxygen30);
+			enterAdminEmail.setMinSize(300, 50);
+			enterAdminEmail.setLayoutX(200);
+			enterAdminEmail.setLayoutY(650);
+			settingsGrid.getChildren().add(enterAdminEmail);
+			
+			ObservableList<String> semesters=FXCollections.observableArrayList("Semester 1", "Semester 2");
+			ComboBox<String> pickSemester=new ComboBox<String>(semesters);
+			if(semester==1){
+				pickSemester.setValue(semesters.get(0));
+			}else{pickSemester.setValue(semesters.get(1));}
+			pickSemester.setLayoutX(200);
+			pickSemester.setLayoutY(750);
+			settingsGrid.getChildren().add(pickSemester);
+			
+			Text pWordError=new Text("Passwords are mismatched!");
+			pWordError.setFont(oxygen30);
+			pWordError.setX(200);
+			pWordError.setY(100);
+			pWordError.setVisible(false);
+			settingsGrid.getChildren().add(pWordError);
+			
+			Text adEmailError=new Text("Invalid admin email!");
+			adEmailError.setFont(oxygen30);
+			adEmailError.setX(200);
+			adEmailError.setY(850);
+			adEmailError.setVisible(false);
+			settingsGrid.getChildren().add(adEmailError);
+			
+			Button goToEmailTemps=new Button("Edit Email Templates");
+			goToEmailTemps.setFont(oxygen30);
+			goToEmailTemps.setLayoutX(800);
+			goToEmailTemps.setLayoutY(100);
+			settingsGrid.getChildren().add(goToEmailTemps);
+			
+			File myFiles=new File(".");
+			ObservableList<File> files=FXCollections.observableArrayList(myFiles.listFiles());
+			
+			
+			Text promptCourse=new Text("Select the student schedule file:");
+			promptCourse.setFont(oxygen30);
+			promptCourse.setX(800);
+			promptCourse.setY(200);
+			settingsGrid.getChildren().add(promptCourse);
+			
+			ComboBox<File> pickClassSource=new ComboBox<File>(files);
+			try{pickClassSource.setValue(files.get(files.indexOf(new File(courseFile))));}catch(Exception e){}
+			pickClassSource.setLayoutX(800);
+			pickClassSource.setLayoutY(250);
+			settingsGrid.getChildren().add(pickClassSource);
+			
+			Text promptTeacher=new Text("Select the teacher email file:");
+			promptTeacher.setFont(oxygen30);
+			promptTeacher.setX(800);
+			promptTeacher.setY(350);
+			settingsGrid.getChildren().add(promptTeacher);
+			
+			
+			ComboBox<File> pickTeacherSource=new ComboBox<File>(files);
+			try{pickTeacherSource.setValue(files.get(files.indexOf(new File(teacherFile))));}catch(Exception e){}
+			pickTeacherSource.setLayoutX(800);
+			pickTeacherSource.setLayoutY(400);
+			settingsGrid.getChildren().add(pickTeacherSource);
+			
+			Text promptReason=new Text("Select the visit reasons file:");
+			promptReason.setFont(oxygen30);
+			promptReason.setX(800);
+			promptReason.setY(500);
+			settingsGrid.getChildren().add(promptReason);
+			
+			ComboBox<File> pickReasonSource=new ComboBox<File>(files);
+			try{pickReasonSource.setValue(files.get(files.indexOf(new File(reasonFile))));}catch(Exception e){}
+			pickReasonSource.setLayoutX(800);
+			pickReasonSource.setLayoutY(550);
+			settingsGrid.getChildren().add(pickReasonSource);
+			
+			Text promptBaseEmail=new Text("Enter the address and password of \n the notification email account");
+			promptBaseEmail.setFont(oxygen30);
+			promptBaseEmail.setX(800);
+			promptBaseEmail.setY(650);
+			settingsGrid.getChildren().add(promptBaseEmail);
+			
+			TextField enterBaseEmail=new TextField(fromEmail);
+			enterBaseEmail.setPromptText("Address");
+			enterBaseEmail.setFont(oxygen30);
+			enterBaseEmail.setMinSize(300, 50);
+			enterBaseEmail.setLayoutX(800);
+			enterBaseEmail.setLayoutY(700);
+			settingsGrid.getChildren().add(enterBaseEmail);
+			
+			PasswordField enterBaseEmailPWord=new PasswordField();
+			enterBaseEmailPWord.setPromptText("Password");
+			enterBaseEmailPWord.setFont(oxygen30);
+			enterBaseEmailPWord.setMinSize(300, 50);
+			enterBaseEmailPWord.setLayoutX(800);
+			enterBaseEmailPWord.setLayoutY(750);
+			settingsGrid.getChildren().add(enterBaseEmailPWord);
+			
+			Text baseError=new Text("Invalid notification address/password");
+			baseError.setFont(oxygen30);
+			baseError.setX(800);
+			baseError.setY(850);
+			baseError.setVisible(false);
+			settingsGrid.getChildren().add(baseError);
+			
+			Text fileError=new Text("Invalid source file!");
+			fileError.setFont(oxygen30);
+			fileError.setX(1300);
+			fileError.setY(200);
+			fileError.setVisible(false);
+			settingsGrid.getChildren().add(fileError);
+			
+			Button settingsToEnterID=new Button("Back");
+			settingsToEnterID.setFont(oxygen50);
+			settingsToEnterID.setLayoutX(1300);
+			settingsToEnterID.setLayoutY(400);
+			settingsGrid.getChildren().add(settingsToEnterID);
+			
+			Button submitSettings=new Button("Save");
+			submitSettings.setFont(oxygen50);
+			submitSettings.setLayoutX(1300);
+			submitSettings.setLayoutY(600);
+			settingsGrid.getChildren().add(submitSettings);
+			
+			settingsGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
+			
 			
 			//Enter Your Student ID Interface Elements
 			Pane enterIDGrid=new Pane();
@@ -264,89 +445,6 @@ public class Main extends Application {
 			wrongPassword.setVisible(false);
 			
 			
-			//Settings
-			Pane settingsGrid=new Pane();
-			Scene settings=new Scene(settingsGrid, s.getWidth(), s.getHeight());
-			
-			Text promptChangePassword=new Text("Change Password");
-			promptChangePassword.setFont(oxygen30);
-			promptChangePassword.setX(200);
-			promptChangePassword.setY(100);
-			settingsGrid.getChildren().add(promptChangePassword);
-			
-			PasswordField newPassword1=new PasswordField();
-			newPassword1.setFont(oxygen30);
-			newPassword1.setPromptText("Enter your new password");
-			newPassword1.setMinSize(300, 100);
-			newPassword1.setLayoutX(200);
-			newPassword1.setLayoutY(300);
-			settingsGrid.getChildren().add(newPassword1);
-			
-			PasswordField newPassword2=new PasswordField();
-			newPassword2.setFont(oxygen30);
-			newPassword2.setPromptText("Re-enter your password");
-			newPassword2.setMinSize(300, 100);
-			newPassword2.setLayoutX(200);
-			newPassword2.setLayoutY(500);
-			settingsGrid.getChildren().add(newPassword2);
-			
-			Button goToBellSchedule=new Button("Bell Schedule");
-			goToBellSchedule.setFont(oxygen30);
-			goToBellSchedule.setLayoutX(200);
-			goToBellSchedule.setLayoutY(700);
-			settingsGrid.getChildren().add(goToBellSchedule);
-			
-			TextField enterAdminEmail=new TextField();
-			enterAdminEmail.setPromptText("Enter your administrator's email address");
-			enterAdminEmail.setFont(oxygen30);
-			enterAdminEmail.setMinSize(300, 100);
-			enterAdminEmail.setLayoutX(200);
-			enterAdminEmail.setLayoutY(900);
-			settingsGrid.getChildren().add(enterAdminEmail);
-			
-			ObservableList<String> semesters=FXCollections.observableArrayList("Semester 1", "Semester 2");
-			ComboBox<String> pickSemester=new ComboBox<String>(semesters);
-			if(semester==1){
-				pickSemester.setValue(semesters.get(0));
-			}else{pickSemester.setValue(semesters.get(1));}
-			pickSemester.setLayoutX(800);
-			pickSemester.setLayoutY(100);
-			settingsGrid.getChildren().add(pickSemester);
-			
-			Button goToEmailTemps=new Button("Edit Email Templates");
-			goToEmailTemps.setFont(oxygen30);
-			goToEmailTemps.setLayoutX(800);
-			goToEmailTemps.setLayoutY(300);
-			settingsGrid.getChildren().add(goToEmailTemps);
-			
-			File myFiles=new File(".");
-			ObservableList<File> files=FXCollections.observableArrayList(myFiles.listFiles());
-			
-			ComboBox<File> pickClassSource=new ComboBox<File>(files);
-			pickClassSource.setValue(new File(courseFile));
-			pickClassSource.setLayoutX(800);
-			pickClassSource.setLayoutY(500);
-			settingsGrid.getChildren().add(pickClassSource);
-			
-			ComboBox<File> pickTeacherSource=new ComboBox<File>(files);
-			pickTeacherSource.setValue(new File(teacherFile));
-			pickTeacherSource.setLayoutX(800);
-			pickTeacherSource.setLayoutY(700);
-			settingsGrid.getChildren().add(pickTeacherSource);
-			
-			ComboBox<File> pickReasonSource=new ComboBox<File>(files);
-			pickReasonSource.setValue(new File(reasonFile));
-			pickReasonSource.setLayoutX(800);
-			pickReasonSource.setLayoutY(900);
-			settingsGrid.getChildren().add(pickReasonSource);
-			
-			Button settingsToEnterID=new Button("Back");
-			settingsToEnterID.setFont(oxygen50);
-			settingsToEnterID.setLayoutX(1200);
-			settingsToEnterID.setLayoutY(400);
-			settingsGrid.getChildren().add(settingsToEnterID);
-			
-			settingsGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
 			
 		//Listeners
 			
@@ -465,16 +563,16 @@ public class Main extends Application {
 			});
 			close.setOnAction(e->{
 				wrongPassword.setVisible(false);
-				if(enterPWordToClose.getText().equals("Password")){
+				if(enterPWordToClose.getText().equals(password)){
+					enterPWordToClose.clear();
 					if(toClose){
 						try{
 							pw.close();
 							log.renameTo(new File("F:\\"+log.getName()));
 							log.delete();
 							Platform.exit();
-						}catch(Exception d){
-
-						}}else{s.setScene(settings);}
+						}catch(Exception d){}
+					}else{s.setScene(settings);}
 						}else{
 							enterPWordToClose.clear();
 							wrongPassword.setVisible(true);
@@ -492,20 +590,104 @@ public class Main extends Application {
 				toClose=true;
 				s.setScene(adminToClose);
 			});
-			s.setScene(enterID);
 
 			//Settings
 			settingsToEnterID.setOnAction(e->{
+				newPassword1.clear();
+				newPassword2.clear();
+				enterAdminEmail.setText(administrator.getEmail());
+				pickSemester.getSelectionModel().select(semester-1);
+				try{pickClassSource.setValue(files.get(files.indexOf(new File(courseFile))));}catch(Exception d){}
+				try{pickTeacherSource.setValue(files.get(files.indexOf(new File(teacherFile))));}catch(Exception d){}
+				try{pickReasonSource.setValue(files.get(files.indexOf(new File(reasonFile))));}catch(Exception d){}
+				enterBaseEmail.setText(fromEmail);
+				enterBaseEmailPWord.clear();
+				baseError.setVisible(false);
+				fileError.setVisible(false);
+				adEmailError.setVisible(false);
+				pWordError.setVisible(false);
 				s.setScene(enterID);
 			});
-			}catch(Exception e) {
-				e.printStackTrace();
+			
+			submitSettings.setOnAction(e->{
+				boolean validSettings=true;
+				try {
+					PrintWriter configWrite=new PrintWriter("config");
+					if(newPassword1.getText().equals("")&&newPassword2.getText().equals("")){
+						configWrite.println(password);
+					}else{
+						if(newPassword1.getText().equals(newPassword2.getText())){
+							configWrite.println(newPassword1.getText());
+						}else{
+							pWordError.setVisible(true);
+							validSettings=false;
+						}
+					}
+					if(enterAdminEmail.getText().equals(administrator.getEmail())){
+						configWrite.println(administrator.getEmail());
+					}else{
+						try{
+							EmailUtil.sendEmail(enterAdminEmail.getText(), "Test", "This is a test");
+							administrator=new Teacher("","",enterAdminEmail.getText());
+							configWrite.println(enterAdminEmail.getText());
+						}catch(Exception d){
+							adEmailError.setVisible(true);
+							validSettings=false;
+						}
+					}
+					if(enterBaseEmail.getText().equals(fromEmail)&&enterBaseEmailPWord.getText().equals("")){
+						configWrite.println(fromEmail);
+						configWrite.println(fromEmailPassword);
+					}else{
+						try{
+							EmailUtil.setFrom(enterBaseEmail.getText(), enterBaseEmailPWord.getText());
+							EmailUtil.sendEmail(enterAdminEmail.getText(), "Test", "This is a test");
+							configWrite.println(enterBaseEmail.getText());
+							configWrite.println(enterBaseEmailPWord.getText());
+						}catch(Exception d){
+							baseError.setVisible(true);
+							validSettings=false;
+						}
+					}
+					try{
+						configWrite.println(pickSemester.getSelectionModel().getSelectedIndex()+1);
+						configWrite.println(courseFile=pickClassSource.getSelectionModel().getSelectedItem().toString());
+						configWrite.println(teacherFile=pickTeacherSource.getSelectionModel().getSelectedItem().toString());
+						configWrite.println(reasonFile=pickReasonSource.getSelectionModel().getSelectedItem().toString());
+					}catch(Exception d){
+						fileError.setVisible(true);
+					}
+					if(validSettings){
+						baseError.setVisible(false);
+						fileError.setVisible(false);
+						adEmailError.setVisible(false);
+						pWordError.setVisible(false);
+						configWrite.close();
+						setConfig();
+						newPassword1.clear();
+						newPassword2.clear();
+						pickClassToEnterID.fire();
+					}
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+			});
+			if(validInit){
+				s.setScene(enterID);
+			}else{
+				s.setScene(settings);
 			}
+
+		}catch(Exception e) {
+			e.printStackTrace();
+			s.setScene(settings);
+		}
 	}
 	public static Teacher getAdmin(){
 		return administrator;
 	}
 	public static void parseData(String file){
+		students=new ArrayList<Student>();
 		Scanner s = null;
 		String id="";
 		String [] quals;
@@ -518,7 +700,7 @@ public class Main extends Application {
 		}
 		in=s.nextLine();
 		quals=in.substring(1,in.length()-1).split("\",\"");
-		while(s.hasNext()){
+		while(s.hasNextLine()){
 			students.add(new Student(quals));
 			id=quals[3];
 			students.get(students.size()-1).addClass(quals);
@@ -528,7 +710,7 @@ public class Main extends Application {
 				students.get(students.size()-1).addClass(quals);
 				in=s.nextLine();
 				quals=in.substring(1,in.length()-1).split("\",\"");
-			}while(id.equals(quals[3])&&s.hasNext());
+			}while(id.equals(quals[3])&&s.hasNextLine());
 			students.get(students.size()-1).sortClass();
 		}
 	}
@@ -546,7 +728,6 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		setConfig();
-		parseData(courseFile);
 		launch(args);
 	}
 }

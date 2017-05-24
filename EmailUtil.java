@@ -21,20 +21,15 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class EmailUtil {
-
-	/**
-	 * Utility method to send simple HTML email
-	 * @param session
-	 * @param toEmail
-	 * @param subject
-	 * @param body
-	 */
-	public static void sendEmail(String toEmail, String subject, String body){
-		try{
-			final String fromEmail = "smcs2019.ssmg@gmail.com"; //requires valid gmail id
-			final String fromName="Media Center";
-			final String password = "Zahoogle13"; // correct password for gmail id
-			
+	static String fromEmail = "smcs2019.ssmg@gmail.com"; //requires valid gmail id
+	static String fromName="Media Center";
+	static String password = "Zahoogle13"; // correct password for gmail id
+	
+	public static void setFrom(String from, String pass){
+		fromEmail=from;
+		password=pass;
+	}
+	public static void sendEmail(String toEmail, String subject, String body) throws MessagingException, UnsupportedEncodingException{
 			System.out.println("TLSEmail Start");
 			Properties props = new Properties();
 			props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
@@ -71,9 +66,6 @@ public class EmailUtil {
 			Transport.send(msg);  
 
 			System.out.println("Email Sent Successfully!!");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 	}
 }

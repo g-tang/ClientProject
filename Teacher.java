@@ -77,6 +77,9 @@ public class Teacher implements Comparable<Teacher>{
 	public String toString(){
 		return first+" "+last;
 	}
+	public String getEmail(){
+		return email;
+	}
 	public boolean equals(Teacher t){
 		if(first.equals(t.first)&&last.equals(t.last)){
 			return true;
