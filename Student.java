@@ -1,8 +1,12 @@
 package application;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 //CRSTITLE,DUR,FIRST,ID,LAST,PD,TCHF,TCHL
 public class Student {
 	private String fName;
@@ -40,15 +44,51 @@ public class Student {
 	}
 	
 	public void sortClass(){
-		Collections.sort((List<Class>)schedule1);
-		Collections.sort((List<Class>)schedule2);
+		Collections.sort(schedule1);
+		Collections.sort(schedule2);
 		
 	}
 	
-	public String getLastName(){
-		return lName;
+	public String getFullName(){
+		return fName+ " "+lName;
 	}
-	
+	public static ArrayList<String[]> parseBellSchedule(){
+		ArrayList<String[]> bellSchedule=new ArrayList<String[]>();
+		Scanner s=null;
+		try {
+			s = new Scanner(new File("BellSchedule"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		while(s.hasNextLine()){
+			bellSchedule.add(s.nextLine().split(":"));
+		}
+		return bellSchedule;
+	}
+	public static Teacher getTheoreticalTeacher(ArrayList<Class> c){
+		ArrayList<String[]> bellSchedule=parseBellSchedule();
+		Date d=new Date();
+		for(int i=0;i<bellSchedule.size();i++){
+			try{
+				if(d.getHours()<=Integer.parseInt(bellSchedule.get(i)[0])){
+					return(searchClass(c, i).getTeacher());
+				}else if(d.getHours()==Integer.parseInt(bellSchedule.get(i)[0])){
+					if(d.getMinutes()<=Integer.parseInt(bellSchedule.get(i)[1])){
+						return(searchClass(c,i).getTeacher());
+					}
+				}
+			}catch(Exception e){}
+		}
+		return null;
+	}
+	private static Class searchClass(ArrayList<Class> classes, int pd){
+		for(Class c:classes){
+			if(c.getPd()==pd){
+				return c;
+			}
+		}
+		return null;
+	}
 	public String getFirstName(){
 		return fName;
 	}

@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
@@ -21,59 +22,57 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class EmailUtil {
+	static String fromEmail = "smcs2019.ssmg@gmail.com"; //requires valid gmail id
+	static String fromName="Media Center";
+	static String password = "Zahoogle13"; // correct password for gmail id
 
-	/**
-	 * Utility method to send simple HTML email
-	 * @param session
-	 * @param toEmail
-	 * @param subject
-	 * @param body
-	 */
-	public static void sendEmail(String toEmail, String subject, String body){
-		try{
-			final String fromEmail = "smcs2019.ssmg@gmail.com"; //requires valid gmail id
-			final String fromName="Media Center";
-			final String password = "Zahoogle13"; // correct password for gmail id
-			
-			System.out.println("TLSEmail Start");
-			Properties props = new Properties();
-			props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
-			props.put("mail.smtp.port", "587"); //TLS Port
-			props.put("mail.smtp.auth", "true"); //enable authentication
-			props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
-			
-	                //create Authenticator object to pass in Session.getInstance argument
-			Authenticator auth = new Authenticator() {
-				//override the getPasswordAuthentication method
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(fromEmail, password);
-				}
-			};
-			Session session = Session.getInstance(props, auth);
-			
-			MimeMessage msg = new MimeMessage(session);
-			//set message headers
-			msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
-			msg.addHeader("format", "flowed");
-			msg.addHeader("Content-Transfer-Encoding", "8bit");
+	public static void setFrom(String from, String pass){
+		fromEmail=from;
+		password=pass;
+	}
+	public static void sendEmail(String toEmail, String subject, String body, File f) throws MessagingException, UnsupportedEncodingException{
+		System.out.println("TLSEmail Start");
+		Properties props = new Properties();
+		props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
+		props.put("mail.smtp.port", "587"); //TLS Port
+		props.put("mail.smtp.auth", "true"); //enable authentication
+		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
 
-			msg.setFrom(new InternetAddress(fromEmail, fromName));
-			msg.setReplyTo(InternetAddress.parse(fromEmail, false));
+		//create Authenticator object to pass in Session.getInstance argument
+		Authenticator auth = new Authenticator() {
+			//override the getPasswordAuthentication method
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(fromEmail, password);
+			}
+		};
+		Session session = Session.getInstance(props, auth);
 
-			msg.setSubject(subject, "UTF-8");
+		MimeMessage msg = new MimeMessage(session);
+		//set message headers
+		msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
+		msg.addHeader("format", "flowed");
+		msg.addHeader("Content-Transfer-Encoding", "8bit");
 
-			msg.setText(body, "UTF-8");
+		msg.setFrom(new InternetAddress(fromEmail, fromName));
+		msg.setReplyTo(InternetAddress.parse(fromEmail, false));
 
-			msg.setSentDate(new Date());
+		msg.setSubject(subject, "UTF-8");
 
-			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
-			System.out.println("Message is ready");
-			Transport.send(msg);  
+		msg.setText(body, "UTF-8");
 
-			System.out.println("Email Sent Successfully!!");
+		msg.setSentDate(new Date());
+		if(f!=null){
+			MimeBodyPart filePart=new MimeBodyPart();
+			Multipart m=new MimeMultipart();
+			filePart.setDataHandler(new DataHandler(new FileDataSource(f)));
+			m.addBodyPart(filePart);
+			msg.setContent(m);
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+		System.out.println("Message is ready");
+		Transport.send(msg);  
+
+		System.out.println("Email Sent Successfully!!");
+
 	}
 }
