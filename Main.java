@@ -55,12 +55,12 @@ public class Main extends Application {
 	static Teacher administrator=new Teacher("","","");
 	Teacher theoretical=new Teacher("","","");
 	String reason="";
-	Font oxygen30=new Font("Oxygen",30);
 	Font oxygen50=new Font("Oxygen", 50);
 	boolean toClose=false;
 	static boolean validInit=true;
 	static Scene settings;
 	static PrintWriter backUp=null;
+	static String bell="";
 	public static void setConfig(){
 		try {
 			Scanner s=new Scanner(new File("config"));
@@ -80,6 +80,7 @@ public class Main extends Application {
 			while(q.hasNextLine()){
 				reasons.add(q.nextLine());
 			}
+			bell=s.nextLine();
 		} catch (Exception e) {
 			e.printStackTrace();
 			// show settings screen
@@ -98,60 +99,53 @@ public class Main extends Application {
 			s.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 			Platform.setImplicitExit(false);
 			s.show();
+			pText.setDims(s.getWidth(), s.getHeight());
 			File backUpFile=new File(new Date().getMonth()+"_"+new Date().getDate()+"_MCLog");
 			backUp=new PrintWriter(backUpFile);
 			System.out.println(s.getWidth());
 			System.out.println(s.getHeight());
-			Date q=new Date();
 
 			//Settings
 			Pane settingsGrid=new Pane();
 			settings=new Scene(settingsGrid, s.getWidth(), s.getHeight());
 
-			Text promptChangePassword=new Text("Change Password:");
-			promptChangePassword.setFont(oxygen30);
-			promptChangePassword.setX(200);promptChangePassword.setY(200);
+			pText promptChangePassword=new pText("Change Password:",200,200);
 			settingsGrid.getChildren().add(promptChangePassword);
 
-			Text promptNewPWord1=new Text("Enter new password below:");
-			promptNewPWord1.setFont(oxygen30);
-			promptNewPWord1.setX(200);promptNewPWord1.setY(250);
+			pText promptNewPWord1=new pText("Enter new password below:",200,250);
 			settingsGrid.getChildren().add(promptNewPWord1);
 
 			PasswordField newPassword1=new PasswordField();
-			newPassword1.setFont(oxygen30);
 			newPassword1.setPromptText("Enter your new password");
 			newPassword1.setMinSize(300, 50);
 			newPassword1.setLayoutX(200);newPassword1.setLayoutY(300);
 			settingsGrid.getChildren().add(newPassword1);
 
 			PasswordField newPassword2=new PasswordField();
-			newPassword2.setFont(oxygen30);
 			newPassword2.setPromptText("Re-enter your password");
 			newPassword2.setMinSize(300, 50);
 			newPassword2.setLayoutX(200);newPassword2.setLayoutY(400);
 			settingsGrid.getChildren().add(newPassword2);
+			
+			pText promptBell=new pText("Select a bell schedule",200,500);
+			settingsGrid.getChildren().add(promptBell);
+			
+			ObservableList<String> bells=FXCollections.observableArrayList("Normal", "2 hour delay", "Half day","Custom");
+			ComboBox<String> pickBell=new ComboBox<String>(bells);
+			try{pickBell.setValue(bells.get(bells.indexOf(bell)));}catch(Exception e){}
+			pickBell.setLayoutX(200);pickBell.setLayoutY(530);
+			settingsGrid.getChildren().add(pickBell);
 
-			Button goToBellSchedule=new Button("Edit Bell Schedule");
-			goToBellSchedule.setFont(oxygen30);
-			goToBellSchedule.setLayoutX(200);goToBellSchedule.setLayoutY(500);
-			settingsGrid.getChildren().add(goToBellSchedule);
-
-			Text promptAdminEmail=new Text("Enter your administrator's email address:");
-			promptAdminEmail.setFont(oxygen30);
-			promptAdminEmail.setX(200);promptAdminEmail.setY(620);
+			pText promptAdminEmail=new pText("Enter your administrator's email address:",200,620);
 			settingsGrid.getChildren().add(promptAdminEmail);
 
 			TextField enterAdminEmail=new TextField(administrator.getEmail());
 			enterAdminEmail.setPromptText("Administrator Email");
-			enterAdminEmail.setFont(oxygen30);
 			enterAdminEmail.setMinSize(300, 50);
 			enterAdminEmail.setLayoutX(200);enterAdminEmail.setLayoutY(650);
 			settingsGrid.getChildren().add(enterAdminEmail);
 			
-			Text promptSem=new Text("Select current semester:");
-			promptSem.setFont(oxygen30);
-			promptSem.setLayoutX(200); promptSem.setLayoutY(800);
+			pText promptSem=new pText("Select current semester:",200,800);
 			settingsGrid.getChildren().add(promptSem);
 
 			ObservableList<String> semesters=FXCollections.observableArrayList("Semester 1", "Semester 2");
@@ -162,20 +156,15 @@ public class Main extends Application {
 			pickSemester.setLayoutX(200);pickSemester.setLayoutY(830);
 			settingsGrid.getChildren().add(pickSemester);
 
-			Text pWordError=new Text("Passwords are mismatched!");
-			pWordError.setFont(oxygen30);
-			pWordError.setX(200);pWordError.setY(100);
+			pText pWordError=new pText("Passwords are mismatched!",200,100);
 			pWordError.setVisible(false);
 			settingsGrid.getChildren().add(pWordError);
 
-			Text adEmailError=new Text("Invalid admin email!");
-			adEmailError.setFont(oxygen30);
-			adEmailError.setX(200);adEmailError.setY(850);
+			pText adEmailError=new pText("Invalid admin email!",200,850);
 			adEmailError.setVisible(false);
 			settingsGrid.getChildren().add(adEmailError);
 
 			Button goToEmailTemps=new Button("Edit Email Templates");
-			goToEmailTemps.setFont(oxygen30);
 			goToEmailTemps.setLayoutX(900);goToEmailTemps.setLayoutY(100);
 			settingsGrid.getChildren().add(goToEmailTemps);
 
@@ -183,9 +172,7 @@ public class Main extends Application {
 			ObservableList<File> files=FXCollections.observableArrayList(myFiles.listFiles());
 
 
-			Text promptCourse=new Text("Select the student schedule file:");
-			promptCourse.setFont(oxygen30);
-			promptCourse.setX(900);promptCourse.setY(225);
+			pText promptCourse=new pText("Select the student schedule file:",900,225);
 			settingsGrid.getChildren().add(promptCourse);
 
 			ComboBox<File> pickClassSource=new ComboBox<File>(files);
@@ -193,9 +180,7 @@ public class Main extends Application {
 			pickClassSource.setLayoutX(900);pickClassSource.setLayoutY(250);
 			settingsGrid.getChildren().add(pickClassSource);
 
-			Text promptTeacher=new Text("Select the teacher email file:");
-			promptTeacher.setFont(oxygen30);
-			promptTeacher.setX(900);promptTeacher.setY(375);
+			pText promptTeacher=new pText("Select the teacher email file:",900,375);
 			settingsGrid.getChildren().add(promptTeacher);
 
 
@@ -204,9 +189,7 @@ public class Main extends Application {
 			pickTeacherSource.setLayoutX(900);pickTeacherSource.setLayoutY(400);
 			settingsGrid.getChildren().add(pickTeacherSource);
 
-			Text promptReason=new Text("Select the visit reasons file:");
-			promptReason.setFont(oxygen30);
-			promptReason.setX(900);promptReason.setY(525);
+			pText promptReason=new pText("Select the visit reasons file:",900,525);
 			settingsGrid.getChildren().add(promptReason);
 
 			ComboBox<File> pickReasonSource=new ComboBox<File>(files);
@@ -214,34 +197,26 @@ public class Main extends Application {
 			pickReasonSource.setLayoutX(900);pickReasonSource.setLayoutY(550);
 			settingsGrid.getChildren().add(pickReasonSource);
 
-			Text promptBaseEmail=new Text("Enter the address and password of \n the notification email account:");
-			promptBaseEmail.setFont(oxygen30);
-			promptBaseEmail.setX(900);promptBaseEmail.setY(700);
+			pText promptBaseEmail=new pText("Enter the address and password of \n the notification email account:",900,700);
 			settingsGrid.getChildren().add(promptBaseEmail);
 
 			TextField enterBaseEmail=new TextField(fromEmail);
 			enterBaseEmail.setPromptText("Address");
-			enterBaseEmail.setFont(oxygen30);
 			enterBaseEmail.setMinSize(300, 50);
 			enterBaseEmail.setLayoutX(900);enterBaseEmail.setLayoutY(750);
 			settingsGrid.getChildren().add(enterBaseEmail);
 
 			PasswordField enterBaseEmailPWord=new PasswordField();
 			enterBaseEmailPWord.setPromptText("Password");
-			enterBaseEmailPWord.setFont(oxygen30);
 			enterBaseEmailPWord.setMinSize(300, 50);
 			enterBaseEmailPWord.setLayoutX(900);enterBaseEmailPWord.setLayoutY(850);
 			settingsGrid.getChildren().add(enterBaseEmailPWord);
 
-			Text baseError=new Text("Invalid notification address/password");
-			baseError.setFont(oxygen30);
-			baseError.setX(900);baseError.setY(850);
+			pText baseError=new pText("Invalid notification address/password",900,850);
 			baseError.setVisible(false);
 			settingsGrid.getChildren().add(baseError);
 
-			Text fileError=new Text("Invalid source file!");
-			fileError.setFont(oxygen30);
-			fileError.setX(1400);fileError.setY(200);
+			pText fileError=new pText("Invalid source file!",1400,200);
 			fileError.setVisible(false);
 			settingsGrid.getChildren().add(fileError);
 
@@ -263,25 +238,21 @@ public class Main extends Application {
 
 			ArrayList<TextField> hours=new ArrayList<TextField>();
 			ArrayList<TextField> minutes=new ArrayList<TextField>();
-			ArrayList<Text> colon=new ArrayList<Text>();
-			ArrayList<String[]> bellSched=Student.parseBellSchedule();
+			ArrayList<pText> colon=new ArrayList<pText>();
+			ArrayList<String[]> bellSched=Student.parseBellSchedule(bell);
 			for(int i=0;i<8;i++){
 				try{
 					hours.add(new TextField(bellSched.get(i)[0]));
 					minutes.add(new TextField(bellSched.get(i)[1]));
-					colon.add(new Text(":"));
+					colon.add(new pText(":",950,225+(i*75)));
 				}catch(Exception e){
 					e.printStackTrace();
 					hours.add(new TextField());
 					minutes.add(new TextField());
-					colon.add(new Text(":"));
+					colon.add(new pText(":",950,225+(i*75)));
 				}
-				hours.get(i).setFont(oxygen30);
 				hours.get(i).setMinSize(100, 50);hours.get(i).setMaxSize(100, 50);
 				hours.get(i).setLayoutX(800);hours.get(i).setLayoutY(200+(i*75));
-				colon.get(i).setFont(oxygen30);
-				colon.get(i).setLayoutX(950);colon.get(i).setLayoutY(225+(i*75));
-				minutes.get(i).setFont(oxygen30);
 				minutes.get(i).setMinSize(100, 50);minutes.get(i).setMaxSize(100, 50);
 				minutes.get(i).setLayoutX(1000);minutes.get(i).setLayoutY(200+(i*75));
 			}
@@ -294,15 +265,11 @@ public class Main extends Application {
 			saveBellSchedule.setLayoutX(880);saveBellSchedule.setLayoutY(900);
 			bellScheduleGrid.getChildren().add(saveBellSchedule);
 			
-			Text bellError=new Text("Please enter an integer from 0-24 or 0-60.");
-			bellError.setFont(oxygen30);
-			bellError.setX(600); bellError.setY(900);
+			pText bellError=new pText("Please enter an integer from 0-24 or 0-60.",600,850);
 			bellScheduleGrid.getChildren().add(bellError);
 			bellError.setVisible(false);
 			
-			Text bellInst=new Text("Please enter the times at which each period ends in 24-hour format.\nIf there are not 8 periods, leave extra spaces at the end blank.");
-			bellInst.setFont(oxygen30);
-			bellInst.setX(600);bellInst.setY(50);
+			pText bellInst=new pText("Please enter the times at which each period ends in 24-hour format.\nIf there are not 8 periods, leave extra spaces at the end blank.",600,100);
 			bellScheduleGrid.getChildren().add(bellInst);
 			
 			bellScheduleGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -311,63 +278,49 @@ public class Main extends Application {
 			//Edit Email Files
 			Pane editTemplateGrid=new Pane();
 			Scene editTemplate=new Scene(editTemplateGrid, s.getWidth(),s.getHeight());
-			Text editTemplateInstructions=new Text("Key: <THEORETICAL>-name of predicted teacher   <TIME>-date and time\n<SIGNEDPASS>-name of selected teacher    <STUDENTNAME>-name of student");
-			editTemplateInstructions.setFont(oxygen30);
-			editTemplateInstructions.setX(0);editTemplateInstructions.setY(100);
+			pText editTemplateInstructions=new pText("    Key: <THEORETICAL>-name of predicted teacher   <TIME>-date and time\n<SIGNEDPASS>-name of selected teacher    <STUDENTNAME>-name of student",500,100);
 			editTemplateGrid.getChildren().add(editTemplateInstructions);
 
-			Text promptPredicted=new Text("To the predicted teacher if the student does not select him/her:");
-			promptPredicted.setFont(oxygen30);
-			promptPredicted.setX(0);promptPredicted.setY(200);
+			pText promptPredicted=new pText("To predicted teacher if student does not select him/her:",100,220);
 			editTemplateGrid.getChildren().add(promptPredicted);
 
 			TextArea predicted=new TextArea(Teacher.fileToString(new File("TheoreticalEmail")));
-			predicted.setFont(oxygen30);
 			predicted.setMaxSize(800, 300);predicted.setMinSize(800, 300);
 			predicted.setWrapText(true);
-			predicted.setLayoutX(0);
+			predicted.setLayoutX(100);
 			predicted.setLayoutY(250);
 			editTemplateGrid.getChildren().add(predicted);
 
-			Text promptNormal=new Text("To the predicted teacher if the student selects him/her:");
-			promptNormal.setFont(oxygen30);
-			promptNormal.setX(0);promptNormal.setY(600);
+			pText promptNormal=new pText("To predicted teacher if student selects him/her:",100,620);
 			editTemplateGrid.getChildren().add(promptNormal);
 
 			TextArea normal=new TextArea(Teacher.fileToString(new File("NormalEmail")));
-			normal.setFont(oxygen30);
 			normal.setMaxSize(800, 300);normal.setMinSize(800, 300);
 			normal.setWrapText(true);
-			normal.setLayoutX(0);normal.setLayoutY(650);
+			normal.setLayoutX(100);normal.setLayoutY(650);
 			editTemplateGrid.getChildren().add(normal);
 
-			Text promptSignedPass=new Text("To the selected teacher if the student does not select the predicted teacher:");
-			promptSignedPass.setFont(oxygen30);
-			promptSignedPass.setX(900);promptSignedPass.setY(200);
+			pText promptSignedPass=new pText("To selected teacher if they are not predicted teacher:",1000,220);
 			editTemplateGrid.getChildren().add(promptSignedPass);
 
 			TextArea signedPass=new TextArea(Teacher.fileToString(new File("SignedPassEmail")));
-			signedPass.setFont(oxygen30);
 			signedPass.setMaxSize(800, 300);signedPass.setMinSize(800, 300);
 			signedPass.setWrapText(true);
-			signedPass.setLayoutX(900);signedPass.setLayoutY(250);
+			signedPass.setLayoutX(1000);signedPass.setLayoutY(250);
 			editTemplateGrid.getChildren().add(signedPass);
 
-			Text promptAdmin=new Text("To the administrator:");
-			promptAdmin.setFont(oxygen30);
-			promptAdmin.setX(900);promptAdmin.setY(600);
+			pText promptAdmin=new pText("To the administrator:",1000,620);
 			editTemplateGrid.getChildren().add(promptAdmin);
 
 			TextArea admin=new TextArea(Teacher.fileToString(new File("AdminEmail")));
-			admin.setFont(oxygen30);
 			admin.setMaxSize(800, 300);admin.setMinSize(800, 300);
 			admin.setWrapText(true);
-			admin.setLayoutX(900);admin.setLayoutY(650);
+			admin.setLayoutX(1000);admin.setLayoutY(650);
 			editTemplateGrid.getChildren().add(admin);
 
 			Button editTemplateToSettings=new Button("Ok");
-			editTemplateToSettings.setFont(oxygen30);
-			editTemplateToSettings.setLayoutX(900);editTemplateToSettings.setLayoutY(1000);
+			editTemplateToSettings.setFont(oxygen50);
+			editTemplateToSettings.setLayoutX(900);editTemplateToSettings.setLayoutY(960);
 			editTemplateGrid.getChildren().add(editTemplateToSettings);
 			
 			editTemplateGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -376,14 +329,12 @@ public class Main extends Application {
 			Pane enterIDGrid=new Pane();
 			Scene enterID=new Scene(enterIDGrid, s.getWidth(),s.getHeight());
 
-			Text promptID=new Text("Enter your student ID number below \n or scan your card. Then click \"Next\"");
+			pText promptID=new pText("Enter your student ID number below \n or scan your card. Then click \"Next\"",500,300);
 			promptID.setFont(oxygen50);
-			promptID.setX(500);promptID.setY(300);
 			enterIDGrid.getChildren().add(promptID);
 			promptID.setTextAlignment(TextAlignment.CENTER);
 
 			TextField inID=new TextField();
-			inID.setFont(oxygen30);
 			inID.setPromptText("Enter your student ID #");
 			inID.setLayoutX(500);inID.setLayoutY(600);
 			inID.setMinSize(800, 20);
@@ -394,20 +345,16 @@ public class Main extends Application {
 			enterIDToPickClass.setLayoutX(800);enterIDToPickClass.setLayoutY(750);
 			enterIDGrid.getChildren().add(enterIDToPickClass);
 
-			Text idError=new Text("Please enter a valid Student ID");
-			idError.setFont(oxygen30);
+			pText idError=new pText("Please enter a valid Student ID",500,700);
 			idError.setVisible(false);
-			idError.setX(500);idError.setY(700);
 			enterIDGrid.getChildren().add(idError);
 
 			Button terminate=new Button("Close");
 			terminate.setLayoutX(1750);terminate.setLayoutY(50);
-			terminate.setFont(oxygen30);
 			enterIDGrid.getChildren().add(terminate);
 
 			Button enterIDToSettings=new Button("Settings");
 			enterIDToSettings.setLayoutX(1550);enterIDToSettings.setLayoutY(50);
-			enterIDToSettings.setFont(oxygen30);
 			enterIDGrid.getChildren().add(enterIDToSettings);
 
 			enterIDGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -417,10 +364,9 @@ public class Main extends Application {
 			Pane pickClassGrid=new Pane();
 			Scene pickClass=new Scene(pickClassGrid, s.getWidth(), s.getHeight());
 
-			Text promptPickClass=new Text();
+			pText promptPickClass=new pText("",300,200);
 			promptPickClass.setFont(oxygen50);
-			promptPickClass.setX(300);promptPickClass.setY(200);
-
+			
 			Button pickClassToOtherTeacher=new Button("Other");
 			pickClassToOtherTeacher.setFont(oxygen50);
 			pickClassToOtherTeacher.setLayoutX(1500);pickClassToOtherTeacher.setLayoutY(500);
@@ -441,20 +387,19 @@ public class Main extends Application {
 			Pane otherTeacherGrid=new Pane();
 			Scene otherTeacher=new Scene(otherTeacherGrid, s.getWidth(), s.getHeight());
 
-			Text promptPickTeacher=new Text("Select the teacher you are with:");
+			pText promptPickTeacher=new pText("Select the teacher you are with:",650,100);
 			promptPickTeacher.setFont(oxygen50);
-			promptPickTeacher.setX(150);promptPickTeacher.setY(100);
 			otherTeacherGrid.getChildren().add(promptPickTeacher);
 
 			Button otherTeacherToPickClass=new Button("Back");
 			otherTeacherToPickClass.setFont(oxygen50);
-			otherTeacherToPickClass.setLayoutX(1100);otherTeacherToPickClass.setLayoutY(500);
+			otherTeacherToPickClass.setLayoutX(400);otherTeacherToPickClass.setLayoutY(500);
 			otherTeacherGrid.getChildren().add(otherTeacherToPickClass);
 
 			ObservableList<Teacher> data=FXCollections.observableArrayList();
 			ListView<Teacher> listTeacher=new ListView<Teacher>(data);
 			listTeacher.setMaxSize(500, 700);listTeacher.setMinSize(500, 700);
-			listTeacher.setLayoutX(250);listTeacher.setLayoutY(200);
+			listTeacher.setLayoutX(750);listTeacher.setLayoutY(200);
 
 			data.addAll(teachers);//move to main after parse
 			otherTeacherGrid.getChildren().add(listTeacher);
@@ -466,28 +411,27 @@ public class Main extends Application {
 			Pane pickReasonsGrid=new Pane();
 			Scene pickReasons=new Scene(pickReasonsGrid, s.getWidth(), s.getHeight());
 
-			Text promptReasons=new Text("Why have you visited?");
+			pText promptReasons=new pText("Why have you visited?",750,100);
 			promptReasons.setFont(oxygen50);
-			promptReasons.setX(250);promptReasons.setY(100);
 			pickReasonsGrid.getChildren().add(promptReasons);
 
 			ObservableList<String> reasonsData=FXCollections.observableArrayList();
 			ListView<String> listReasons=new ListView<String>(reasonsData);
 			listReasons.setMaxSize(500, 700);listReasons.setMinSize(500, 700);
 			reasonsData.addAll(reasons);
-			listReasons.setLayoutX(250);listReasons.setLayoutY(200);
+			listReasons.setLayoutX(750);listReasons.setLayoutY(200);
 			pickReasonsGrid.getChildren().add(listReasons);
 
 			pickReasons.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
 
 			Button reasonsToOtherTeacher=new Button("Back");
 			reasonsToOtherTeacher.setFont(oxygen50);
-			reasonsToOtherTeacher.setLayoutX(1125);reasonsToOtherTeacher.setLayoutY(300);
+			reasonsToOtherTeacher.setLayoutX(400);reasonsToOtherTeacher.setLayoutY(500);
 			pickReasonsGrid.getChildren().add(reasonsToOtherTeacher);
 
 			Button submit=new Button("Submit");
 			submit.setFont(oxygen50);
-			submit.setLayoutX(1100);submit.setLayoutY(500);
+			submit.setLayoutX(1500);submit.setLayoutY(500);
 			pickReasonsGrid.getChildren().add(submit);
 			submit.setDisable(true);
 
@@ -497,21 +441,19 @@ public class Main extends Application {
 			Pane adminToCloseGrid=new Pane();
 			Scene adminToClose=new Scene(adminToCloseGrid, s.getWidth(), s.getHeight());
 
-			Text promptPassword=new Text("Please enter the password");
+			pText promptPassword=new pText("Please enter the password",700,200);
 			promptPassword.setFont(oxygen50);
-			promptPassword.setX(700);promptPassword.setY(200);
 			adminToCloseGrid.getChildren().add(promptPassword);
 
 			PasswordField enterPWordToClose=new PasswordField();
-			enterPWordToClose.setFont(oxygen30);
 			enterPWordToClose.setPromptText("Enter password here");
-			enterPWordToClose.setLayoutX(500);enterPWordToClose.setLayoutY(400);
+			enterPWordToClose.setLayoutX(480);enterPWordToClose.setLayoutY(400);
 			enterPWordToClose.setMinSize(1000, 100);
 			adminToCloseGrid.getChildren().add(enterPWordToClose);
 
 			Button close=new Button("Ok");
 			close.setFont(oxygen50);
-			close.setLayoutX(1000);close.setLayoutY(700);
+			close.setLayoutX(1020);close.setLayoutY(700);
 			adminToCloseGrid.getChildren().add(close);
 
 			Button cancelClose=new Button("Cancel");
@@ -519,9 +461,7 @@ public class Main extends Application {
 			cancelClose.setLayoutX(700);cancelClose.setLayoutY(700);
 			adminToCloseGrid.getChildren().add(cancelClose);
 
-			Text wrongPassword=new Text("Wrong password!");
-			wrongPassword.setFont(oxygen30);
-			wrongPassword.setX(500);wrongPassword.setY(700);
+			pText wrongPassword=new pText("Wrong password!",500,700);
 			adminToCloseGrid.getChildren().add(wrongPassword);
 			wrongPassword.setVisible(false);
 			
@@ -531,9 +471,9 @@ public class Main extends Application {
 			//Thank you!
 			Pane thankYouGrid=new Pane();
 			Scene thankYou=new Scene(thankYouGrid,s.getWidth(),s.getHeight());
-			Text tyTxt=new Text("Thank you!");
+			
+			pText tyTxt=new pText("Thank you!",600,500);
 			tyTxt.setFont(oxygen50);
-			tyTxt.setX(600);tyTxt.setY(500);
 			thankYouGrid.getChildren().add(tyTxt);
 			
 			thankYouGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -620,8 +560,9 @@ public class Main extends Application {
 			});
 			submit.setOnAction(e->{
 				try{
-					s.setScene(thankYou);
-					theoretical=Student.getTheoreticalTeacher(focus.getSchedule(1));
+					//TODO figure out thankyou
+					//Thread.sleep(1000);
+					theoretical=Student.getTheoreticalTeacher(focus.getSchedule(1), bell);
 					System.out.println("Notify: "+notify);
 					System.out.println("Theoretical: "+theoretical);
 					theoretical=theoretical.findTeacher(teachers);
@@ -667,7 +608,7 @@ public class Main extends Application {
 					if(toClose){
 						backUp.close();
 						try{
-							writeToDrive(backUpFile);
+							//TODO writeToDrive(backUpFile);
 							backUpFile.delete();
 							Platform.exit();
 						}catch(Exception d){d.printStackTrace();}
@@ -755,9 +696,11 @@ public class Main extends Application {
 						configWrite.println(courseFile=pickClassSource.getSelectionModel().getSelectedItem().toString());
 						configWrite.println(teacherFile=pickTeacherSource.getSelectionModel().getSelectedItem().toString());
 						configWrite.println(reasonFile=pickReasonSource.getSelectionModel().getSelectedItem().toString());
+						configWrite.println(bell);
 					}catch(Exception d){
 						d.printStackTrace();
 						fileError.setVisible(true);
+						validSettings=false;
 					}
 					if(validSettings){
 						baseError.setVisible(false);
@@ -774,8 +717,14 @@ public class Main extends Application {
 					e1.printStackTrace();
 				}
 			});
-			goToBellSchedule.setOnAction(e->{
-				s.setScene(bellSchedule);
+			pickBell.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+					bell=newValue;
+					if(bells.indexOf(newValue)==3){
+						s.setScene(bellSchedule);
+					}
+					
+				}
 			});
 			goToEmailTemps.setOnAction(e->{
 				s.setScene(editTemplate);
@@ -787,14 +736,14 @@ public class Main extends Application {
 				boolean validSchedule=true;
 				PrintWriter pwBell=null;
 				try {
-					pwBell=new PrintWriter(new File("BellSchedule"));
+					pwBell=new PrintWriter(new File("Custom"));
 				} catch (FileNotFoundException e1) {e1.printStackTrace();}
 				for(int i=0;i<8;i++){
 					if(hours.get(i).getText().equals("")&&minutes.get(i).getText().equals("")){
 						pwBell.println();
 					}else{
 						try{
-							if(!(Integer.parseInt(hours.get(i).getText())<=24&&Integer.parseInt(hours.get(i).getText())>=0)&&Integer.parseInt(minutes.get(i).getText())<=60&&Integer.parseInt(minutes.get(i).getText())>=0){throw new NumberFormatException();}
+							if(!(Integer.parseInt(hours.get(i).getText())<=24&&Integer.parseInt(hours.get(i).getText())>=0&&Integer.parseInt(minutes.get(i).getText())<=60&&Integer.parseInt(minutes.get(i).getText())>=0)){throw new NumberFormatException();}
 							pwBell.println(hours.get(i).getText()+":"+minutes.get(i).getText());
 						}catch(Exception d){
 							bellError.setVisible(true);
@@ -884,16 +833,6 @@ public class Main extends Application {
 	}
 	public static void writeToDrive(File f) throws IOException, MessagingException {
 		EmailUtil.sendEmail(fromEmail, "MediaCenterLogData", "",f);
-		
-		URL url = new URL("https://script.google.com/macros/s/AKfycby4tgnSC6H6HE6QN9u-tcX7w9bn9-SB4gjmp460RBYOOzCGcM4/exec");
-		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setDoOutput(true);
-		httpCon.setRequestMethod("GET");
-		OutputStreamWriter out = new OutputStreamWriter(
-				httpCon.getOutputStream());
-		System.out.println(httpCon.getResponseCode());
-		System.out.println(httpCon.getResponseMessage());
-		out.close();
 	}
 	public static void main(String[] args) {
 		setConfig();

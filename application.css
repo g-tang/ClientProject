@@ -1,3 +1,6 @@
 .list-cell{
 	-fx-font: 20pt "Oxygen";
 }
+.root{
+	-fx-font: 23pt "Oxygen";
+}

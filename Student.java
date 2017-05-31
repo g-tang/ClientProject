@@ -52,21 +52,27 @@ public class Student {
 	public String getFullName(){
 		return fName+ " "+lName;
 	}
-	public static ArrayList<String[]> parseBellSchedule(){
+	public static ArrayList<String[]> parseBellSchedule(String sched){
 		ArrayList<String[]> bellSchedule=new ArrayList<String[]>();
 		Scanner s=null;
 		try {
-			s = new Scanner(new File("BellSchedule"));
+			s = new Scanner(new File(sched));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		while(s.hasNextLine()){
 			bellSchedule.add(s.nextLine().split(":"));
 		}
+		for(String[] st:bellSchedule){
+			for(String str:st){
+				System.out.print(str+" ");
+			}
+			System.out.println();
+		}
 		return bellSchedule;
 	}
-	public static Teacher getTheoreticalTeacher(ArrayList<Class> c){
-		ArrayList<String[]> bellSchedule=parseBellSchedule();
+	public static Teacher getTheoreticalTeacher(ArrayList<Class> c, String sched){
+		ArrayList<String[]> bellSchedule=parseBellSchedule(sched);
 		Date d=new Date();
 		for(int i=0;i<bellSchedule.size();i++){
 			try{
