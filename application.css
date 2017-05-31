@@ -3,4 +3,11 @@
 }
 .root{
 	-fx-font: 23pt "Oxygen";
+	-fx-background:rgb(252,203,88);
+}
+.text{
+	-fx-fill:rgb(0,0,76);
+}
+#text{
+	-fx-fill:rgb(0,0,76); 
 }
