@@ -26,9 +26,10 @@ public class EmailUtil {
 	static String fromName="Media Center";
 	static String password = "Zahoogle13"; // correct password for gmail id
 
-	public static void setFrom(String from, String pass){
+	public static void setFrom(String from, String pass) throws UnsupportedEncodingException, MessagingException{
 		fromEmail=from;
 		password=pass;
+		sendEmail(fromEmail,"","Verifying email password-The Media Center",null);
 	}
 	public static void sendEmail(String toEmail, String subject, String body, File f) throws MessagingException, UnsupportedEncodingException{
 		System.out.println("TLSEmail Start");

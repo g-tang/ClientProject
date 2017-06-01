@@ -2,9 +2,15 @@ package application;
 
 import java.util.Date;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
+import java.nio.file.StandardCopyOption;
 
 public class Teacher implements Comparable<Teacher>{
 	private String first="";
@@ -128,5 +134,35 @@ public class Teacher implements Comparable<Teacher>{
 	}
 	public int compareTo(Teacher arg0) {
 		return last.compareTo(arg0.last);
+	}
+	public static void parseTeacher(File perm){
+		Scanner kb = null;
+		try {
+			kb = new Scanner(perm);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		PrintWriter writer = null;
+		File temp=new File("7NP89kpOjvZLMhPAnWSfNeknbtt3rgA4Ox2aYg541Pi7uxoVAjRLmsjK80soWkt1wT72mp2900AapsCKn532I2nPLPMrvYXhjnP781sRxmri9Wbr4ukwtna4PWxuCf77QPP2iVvr5Oma");
+		try {
+			writer = new PrintWriter(temp);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		while(kb.hasNextLine()){
+			String line = kb.nextLine();
+			int isEmail = line.indexOf("@mcpsmd");
+			if(isEmail!=-1){
+				writer.println(line);
+			}
+		}kb.close();
+		writer.close();
+		try {
+			Files.move(temp.toPath(), perm.toPath(), StandardCopyOption.valueOf("REPLACE_EXISTING"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

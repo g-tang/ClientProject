@@ -56,8 +56,8 @@ public class Student {
 		ArrayList<String[]> bellSchedule=new ArrayList<String[]>();
 		Scanner s=null;
 		try {
-			s=new Scanner(new File("Normal"));
-			s = new Scanner(new File(sched));
+			s=new Scanner(new File("src/application/Normal"));
+			s = new Scanner(new File("src/application/"+sched));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

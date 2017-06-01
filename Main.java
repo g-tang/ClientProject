@@ -59,7 +59,7 @@ public class Main extends Application {
 	static String bell="";
 	public static void setConfig(){
 		try {
-			Scanner s=new Scanner(new File("config"));
+			Scanner s=new Scanner(new File("src/application/config"));
 			password=s.nextLine();
 			administrator=new Teacher("","",s.nextLine());
 			fromEmailPassword=s.nextLine();
@@ -68,6 +68,7 @@ public class Main extends Application {
 			courseFile=s.nextLine();
 			parseData(courseFile);
 			teacherFile=s.nextLine();
+			Teacher.parseTeacher(new File(teacherFile));
 			teachers=Teacher.getTeacherInfo(new File(teacherFile));
 			reasonFile=s.nextLine();
 			Scanner q=new Scanner(new File(reasonFile));
@@ -638,7 +639,7 @@ public class Main extends Application {
 			submitSettings.setOnAction(e->{
 				boolean validSettings=true;
 				try {
-					PrintWriter configWrite=new PrintWriter("config");
+					PrintWriter configWrite=new PrintWriter("src/application/config");
 					if(newPassword1.getText().equals("")&&newPassword2.getText().equals("")){
 						configWrite.println(password);
 					}else{
@@ -703,10 +704,15 @@ public class Main extends Application {
 			});
 			pickBell.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-					bell=newValue;
+					try{
+                                        bell=newValue;
 					if(bells.indexOf(newValue)==3){
 						s.setScene(bellSchedule);
 					}
+                                        }catch(Exception d){
+                                            s.setScene(bellSchedule);
+                                            try{pickBell.setValue(bells.get(bells.indexOf(bell)));}catch(Exception e){}
+                                        }
 
 				}
 			});
@@ -720,7 +726,7 @@ public class Main extends Application {
 				boolean validSchedule=true;
 				PrintWriter pwBell=null;
 				try {
-					pwBell=new PrintWriter(new File("Custom"));
+					pwBell=new PrintWriter(new File("src/application/Custom"));
 				} catch (Exception e1) {e1.printStackTrace();}
 				for(int i=0;i<8;i++){
 					if(hours.get(i).getText().equals("")&&minutes.get(i).getText().equals("")){
@@ -739,6 +745,7 @@ public class Main extends Application {
 				if(validSchedule){
 					pwBell.close();
 					s.setScene(settings);
+                                        bell="Custom";
 				}
 			});
 
