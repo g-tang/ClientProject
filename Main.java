@@ -59,7 +59,8 @@ public class Main extends Application {
 	static String bell="";
 	public static void setConfig(){
 		try {
-			Scanner s=new Scanner(new File("src/application/config"));
+			Scanner s=new Scanner(new File("DoNotTouch/config"));
+			System.out.println(new File("DoNotTouch/config").getAbsolutePath());
 			password=s.nextLine();
 			administrator=new Teacher("","",s.nextLine());
 			fromEmailPassword=s.nextLine();
@@ -132,13 +133,13 @@ public class Main extends Application {
 			pickBell.setLayoutX(200);pickBell.setLayoutY(530);
 			settingsGrid.getChildren().add(pickBell);
 
-			pText promptAdminEmail=new pText("Enter your administrator's email address:",200,620);
+			pText promptAdminEmail=new pText("Enter your administrator's email address:",200,640);
 			settingsGrid.getChildren().add(promptAdminEmail);
 
 			TextField enterAdminEmail=new TextField(administrator.getEmail());
 			enterAdminEmail.setPromptText("Administrator Email");
 			enterAdminEmail.setMinSize(300, 50);
-			enterAdminEmail.setLayoutX(200);enterAdminEmail.setLayoutY(650);
+			enterAdminEmail.setLayoutX(200);enterAdminEmail.setLayoutY(670);
 			settingsGrid.getChildren().add(enterAdminEmail);
 
 			pText promptSem=new pText("Select current semester:",200,800);
@@ -168,7 +169,7 @@ public class Main extends Application {
 			ObservableList<File> Files=FXCollections.observableArrayList(myFiles.listFiles());
 
 
-			pText promptCourse=new pText("Select the student schedule File:",900,225);
+			pText promptCourse=new pText("Select the student schedule file:",900,225);
 			settingsGrid.getChildren().add(promptCourse);
 
 			ComboBox<File> pickClassSource=new ComboBox<File>(Files);
@@ -176,7 +177,7 @@ public class Main extends Application {
 			pickClassSource.setLayoutX(900);pickClassSource.setLayoutY(250);
 			settingsGrid.getChildren().add(pickClassSource);
 
-			pText promptTeacher=new pText("Select the teacher email File:",900,375);
+			pText promptTeacher=new pText("Select the teacher email file:",900,375);
 			settingsGrid.getChildren().add(promptTeacher);
 
 
@@ -185,7 +186,7 @@ public class Main extends Application {
 			pickTeacherSource.setLayoutX(900);pickTeacherSource.setLayoutY(400);
 			settingsGrid.getChildren().add(pickTeacherSource);
 
-			pText promptReason=new pText("Select the visit reasons File:",900,525);
+			pText promptReason=new pText("Select the visit reasons file:",900,525);
 			settingsGrid.getChildren().add(promptReason);
 
 			ComboBox<File> pickReasonSource=new ComboBox<File>(Files);
@@ -199,7 +200,7 @@ public class Main extends Application {
 			PasswordField enterBaseEmailPWord=new PasswordField();
 			enterBaseEmailPWord.setPromptText("Password");
 			enterBaseEmailPWord.setMinSize(300, 50);
-			enterBaseEmailPWord.setLayoutX(900);enterBaseEmailPWord.setLayoutY(850);
+			enterBaseEmailPWord.setLayoutX(900);enterBaseEmailPWord.setLayoutY(750);
 			settingsGrid.getChildren().add(enterBaseEmailPWord);
 
 			pText baseError=new pText("Invalid notification address/password",900,850);
@@ -639,7 +640,7 @@ public class Main extends Application {
 			submitSettings.setOnAction(e->{
 				boolean validSettings=true;
 				try {
-					PrintWriter configWrite=new PrintWriter("src/application/config");
+					PrintWriter configWrite=new PrintWriter("DoNotTouch/config");
 					if(newPassword1.getText().equals("")&&newPassword2.getText().equals("")){
 						configWrite.println(password);
 					}else{
@@ -726,7 +727,7 @@ public class Main extends Application {
 				boolean validSchedule=true;
 				PrintWriter pwBell=null;
 				try {
-					pwBell=new PrintWriter(new File("src/application/Custom"));
+					pwBell=new PrintWriter(new File("DoNotTouch/Custom"));
 				} catch (Exception e1) {e1.printStackTrace();}
 				for(int i=0;i<8;i++){
 					if(hours.get(i).getText().equals("")&&minutes.get(i).getText().equals("")){
