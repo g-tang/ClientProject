@@ -1,3 +1,30 @@
-.list-cell{
-	-fx-font: 20pt "Oxygen";
+.list-view{
+	-fx-background-radius:10;
+}
+.combo-box{
+	-fx-background-radius:10;
+}
+.root{
+	-fx-font: 23pt "Oxygen";
+	-fx-background:rgb(20,20,20);
+	
+}
+.text-area{
+	-fx-background-radius:10;
+	-fx-border-radius:10;
+}
+.text{
+	-fx-fill:rgb(0,0,0);
+}
+#text{
+	-fx-fill:rgb(252,194,27);
+	 
+}
+.text-field{
+	-fx-background-radius:10;
+	-fx-accent:rgb(20,20,20);
+	-fx-focus-color:rgb(252,194,27);
+}
+.button{
+	-fx-background-radius:10;
 }
