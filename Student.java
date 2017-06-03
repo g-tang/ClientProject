@@ -32,21 +32,9 @@ public class Student {
 		}
 	}
 	
-	public String toString(){
-		System.out.println( fName+" "+lName+", #"+id);
-		for(Class c:schedule1){
-			System.out.println(c);
-		}
-		for(Class d:schedule2){
-			System.out.println(d);
-		}
-		return "";
-	}
-	
 	public void sortClass(){
 		Collections.sort(schedule1);
 		Collections.sort(schedule2);
-		
 	}
 	
 	public String getFullName(){
@@ -75,9 +63,18 @@ public class Student {
 	public static Teacher getTheoreticalTeacher(ArrayList<Class> c, String sched){
 		ArrayList<String[]> bellSchedule=parseBellSchedule(sched);
 		Date d=new Date();
-		for(int i=0;i<bellSchedule.size();i++){
+		try{
+			if(d.getHours()<Integer.parseInt(bellSchedule.get(0)[0])){
+				return null;
+			}else if(d.getHours()==Integer.parseInt(bellSchedule.get(0)[0])){
+				if(d.getMinutes()<=Integer.parseInt(bellSchedule.get(0)[1])){
+					return null;
+				}
+			}
+		}catch(Exception e){}
+		for(int i=1;i<bellSchedule.size();i++){
 			try{
-				if(d.getHours()<=Integer.parseInt(bellSchedule.get(i)[0])){
+				if(d.getHours()<Integer.parseInt(bellSchedule.get(i)[0])){
 					return(searchClass(c, i).getTeacher());
 				}else if(d.getHours()==Integer.parseInt(bellSchedule.get(i)[0])){
 					if(d.getMinutes()<=Integer.parseInt(bellSchedule.get(i)[1])){

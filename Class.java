@@ -15,7 +15,7 @@ public class Class implements Comparable<Class>{
 	}
 	
 	public String toString(){
-		return pd+ "\t"+(name+"                                                   ").substring(0, 25)+"\t"+teacher;
+		return pd+ "\t"+(name+"                                                                    ").substring(0, 35)+"\t"+teacher;
 	}
 	
 	public int compareTo(Class arg0) {

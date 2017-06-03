@@ -23,26 +23,25 @@ public class Teacher implements Comparable<Teacher>{
 	private String email="";
 	public Teacher(String f, String l, String e){
 		for(int i=0;i<f.length();i++){
-			if(Character.isLetter(f.charAt(i))){
+			if(Character.isLetter(f.charAt(i))||f.charAt(i)=='-'){
 				first = first + f.charAt(i);
 			}
 		}
 		for(int i=0;i<l.length();i++){
-			if(Character.isLetter(l.charAt(i))){
+			if(Character.isLetter(l.charAt(i))||l.charAt(i)=='-'){
 				last = last + l.charAt(i);
 			}
 		}
 		email=e;
 	}
 	public void sendEmail(File template, Teacher theoretical, Teacher signedPass, Student st, String r) throws Exception{
-		try{	
-			String message="";
+		String message="";
+		try{
 			Scanner s=null;
 			try {
 				s = new Scanner(template);
 				while(s.hasNextLine()){
 					message+=s.nextLine()+"\n";
-					System.out.println("reading");
 				}
 			} catch (Exception e) {System.out.println("Template error");}
 			message=message.replaceAll("<SIGNEDPASS>", signedPass.toString());
@@ -55,18 +54,9 @@ public class Teacher implements Comparable<Teacher>{
 			EmailUtil.sendEmail(this.email, "MediaCenterStudentSignIn", message);
 		}catch(UnsupportedEncodingException | MessagingException e){
 			System.out.println("Email Error");
-			sendErrorMessage(new File("ErrorEmail"), this);
+			EmailUtil.sendEmail(Main.getAdmin().getEmail(),"Failed notification: Does "+this+" have a valid email?", message);
 			throw new Exception();
 		}
-	}
-	public void sendErrorMessage(File template, Teacher about){
-		String message=fileToString(template);
-		Scanner s=null;
-		try {
-			message=message.replaceAll("<TEACHER>", about.toString());
-			System.out.println(message);
-			EmailUtil.sendEmail(Main.getAdmin().email, "Media Center Sign In Error", message);
-		} catch (Exception e) {}
 	}
 	public static String fileToString(File f){
 		String message="";
