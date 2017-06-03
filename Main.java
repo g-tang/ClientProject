@@ -14,11 +14,9 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
@@ -42,7 +40,6 @@ public class Main extends Application {
 	static Teacher administrator=new Teacher("","","");
 	Teacher theoretical=new Teacher("","","");
 	String reason="";
-	Font tms50=new Font("Trebuchet MS", 50);
 	boolean toClose=false;
 	static boolean validInit=true;
 	static Scene settings;
@@ -61,7 +58,8 @@ public class Main extends Application {
 			s.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 			Platform.setImplicitExit(false);
 			s.show();
-			CText.setDims(s.getWidth(), s.getHeight());
+			CText.setDim(s.getWidth(), s.getHeight());
+			Font tms50=new Font("Trebuchet MS", (50.0/1920)*CText.width);
 			File backUpFile=new File(new Date().getMonth()+"_"+new Date().getDate()+"_MCLog");
 			backUp=new PrintWriter(backUpFile);
 			System.out.println(s.getWidth());
@@ -77,10 +75,10 @@ public class Main extends Application {
 			CText promptNewPWord1=new CText("Enter new password below:",200,250);
 			settingsGrid.getChildren().add(promptNewPWord1);
 
-			CPasswordField newPassword1=new CPasswordField("Enter your new password",300,50,200,300);
+			CPasswordField newPassword1=new CPasswordField("Enter your new password",300,60,200,300);
 			settingsGrid.getChildren().add(newPassword1);
 
-			CPasswordField newPassword2=new CPasswordField("Re-enter your password",300,50,200,400);
+			CPasswordField newPassword2=new CPasswordField("Re-enter your password",300,60,200,400);
 			settingsGrid.getChildren().add(newPassword2);
 
 			CText promptBell=new CText("Select a bell schedule",200,520);
@@ -89,7 +87,8 @@ public class Main extends Application {
 			ObservableList<String> bells=FXCollections.observableArrayList("Normal", "2 hour delay", "Half day","Custom");
 			ComboBox<String> pickBell=new ComboBox<String>(bells);
 			try{pickBell.setValue(bells.get(bells.indexOf(bell)));}catch(Exception e){}
-			pickBell.setLayoutX(200);pickBell.setLayoutY(550);
+			setLocationSize(pickBell,300,60,200,550);
+			
 			settingsGrid.getChildren().add(pickBell);
 
 			CText promptSem=new CText("Select current semester:",200,690);
@@ -100,48 +99,44 @@ public class Main extends Application {
 			if(semester==1){
 				pickSemester.setValue(semesters.get(0));
 			}else{pickSemester.setValue(semesters.get(1));}
-			pickSemester.setLayoutX(200);pickSemester.setLayoutY(720);
+			setLocationSize(pickSemester,300,60,200,720);
 			settingsGrid.getChildren().add(pickSemester);
 
-			Button goToEmailTemps=new Button("Edit Email Templates");
-			goToEmailTemps.setLayoutX(900);goToEmailTemps.setLayoutY(100);
+			CButton goToEmailTemps=new CButton("Edit Email Templates",900,150);
 			settingsGrid.getChildren().add(goToEmailTemps);
 
 			File myFiles=new File(".");//TODO
 			ObservableList<File> Files=FXCollections.observableArrayList(myFiles.listFiles());
 
 
-			CText promptCourse=new CText("Select the student schedule file:",900,225);
+			CText promptCourse=new CText("Select the student schedule file:",900,275);
 			settingsGrid.getChildren().add(promptCourse);
 
 			ComboBox<File> pickClassSource=new ComboBox<File>(Files);
 			try{pickClassSource.setValue(Files.get(Files.indexOf(new File(courseFile))));}catch(Exception e){e.printStackTrace();}
-			pickClassSource.setLayoutX(900);pickClassSource.setLayoutY(250);
+			setLocationSize(pickClassSource,300,60,900,300);
 			settingsGrid.getChildren().add(pickClassSource);
 
-			CText promptTeacher=new CText("Select the teacher email file:",900,375);
+			CText promptTeacher=new CText("Select the teacher email file:",900,425);
 			settingsGrid.getChildren().add(promptTeacher);
 
 
 			ComboBox<File> pickTeacherSource=new ComboBox<File>(Files);
 			try{pickTeacherSource.setValue(Files.get(Files.indexOf(new File(teacherFile))));}catch(Exception e){e.printStackTrace();}
-			pickTeacherSource.setLayoutX(900);pickTeacherSource.setLayoutY(400);
+			setLocationSize(pickTeacherSource,300,60,900,450);
 			settingsGrid.getChildren().add(pickTeacherSource);
 			
-			Button goToReasons=new Button("Edit Reasons");
-			goToReasons.setLayoutX(900);goToReasons.setLayoutY(550);
+			CButton goToReasons=new CButton("Edit Reasons",900,560);
 			settingsGrid.getChildren().add(goToReasons);
 
 			CText promptAdminEmail=new CText("Enter the admin email address:",900,690);
 			settingsGrid.getChildren().add(promptAdminEmail);
 
-			TextField enterAdminEmail=new TextField(administrator.getEmail());
+			CTextField enterAdminEmail=new CTextField(administrator.getEmail(),300,60,900,720);
 			enterAdminEmail.setPromptText("Administrator Email");
-			enterAdminEmail.setMinSize(300, 50);
-			enterAdminEmail.setLayoutX(900);enterAdminEmail.setLayoutY(720);
 			settingsGrid.getChildren().add(enterAdminEmail);
 
-			CPasswordField enterAdminEmailPWord=new CPasswordField("Password",300,50,900,800);
+			CPasswordField enterAdminEmailPWord=new CPasswordField("Password",300,60,900,800);
 			settingsGrid.getChildren().add(enterAdminEmailPWord);
 
 			CText pWordError=new CText("Passwords are mismatched!",1400,100);
@@ -156,14 +151,12 @@ public class Main extends Application {
 			FileError.setVisible(false);
 			settingsGrid.getChildren().add(FileError);
 
-			Button settingsToEnterID=new Button("Back");
+			CButton settingsToEnterID=new CButton("Back",1400,400);
 			settingsToEnterID.setFont(tms50);
-			settingsToEnterID.setLayoutX(1400);settingsToEnterID.setLayoutY(400);
 			settingsGrid.getChildren().add(settingsToEnterID);
 
-			Button submitSettings=new Button("Save");
+			CButton submitSettings=new CButton("Save",1400,600);
 			submitSettings.setFont(tms50);
-			submitSettings.setLayoutX(1400);submitSettings.setLayoutY(600);
 			settingsGrid.getChildren().add(submitSettings);
 
 			settingsGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -175,15 +168,11 @@ public class Main extends Application {
 			CText reasonPrompt=new CText("Edit potential visit reasons below, \ninserting a carriage return after each one.",500,50);
 			reasonEdGrid.getChildren().add(reasonPrompt);
 			
-			TextArea reasonField=new TextArea(Teacher.fileToString(new File("DoNotTouch/Reasons")));
-			reasonField.setMaxSize(800, 700);reasonField.setMinSize(800, 700);
-			reasonField.setLayoutX(400);
-			reasonField.setLayoutY(150);
+			CTextArea reasonField=new CTextArea(Teacher.fileToString(new File("DoNotTouch/Reasons")),800,700,400,150);
 			reasonEdGrid.getChildren().add(reasonField);
 			
-			Button enterReasons=new Button("Ok");
+			CButton enterReasons=new CButton("Ok",900,900);
 			enterReasons.setFont(tms50);
-			enterReasons.setLayoutX(900);enterReasons.setLayoutY(900);
 			reasonEdGrid.getChildren().add(enterReasons);
 			
 			reasonEdGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -192,37 +181,32 @@ public class Main extends Application {
 			Pane bellScheduleGrid=new Pane();
 			Scene bellSchedule=new Scene(bellScheduleGrid,s.getWidth(),s.getHeight());
 
-			ArrayList<TextField> hours=new ArrayList<TextField>();
-			ArrayList<TextField> minutes=new ArrayList<TextField>();
+			ArrayList<CTextField> hours=new ArrayList<CTextField>();
+			ArrayList<CTextField> minutes=new ArrayList<CTextField>();
 			ArrayList<CText> colon=new ArrayList<CText>();
 			ArrayList<String[]> bellSched=Student.parseBellSchedule("Custom");
 			bellScheduleGrid.getChildren().add(new CText("School Starts:",700,225));
 			for(int i=0;i<9;i++){
 				try{
-					hours.add(new TextField(bellSched.get(i)[0]));
-					minutes.add(new TextField(bellSched.get(i)[1]));
+					hours.add(new CTextField(bellSched.get(i)[0],100,50,800,200+(i*75)));
+					minutes.add(new CTextField(bellSched.get(i)[1],100,50,1000,200+(i*75)));
 					colon.add(new CText(":",950,225+(i*75)));
 					if(i!=0){bellScheduleGrid.getChildren().add(new CText(String.valueOf(i),700,225+(i*75)));}
 				}catch(Exception e){
 					e.printStackTrace();
-					hours.add(new TextField());
-					minutes.add(new TextField());
+					hours.add(new CTextField("",100,50,800,200+(i*75)));
+					minutes.add(new CTextField("",100,50,1000,200+(i*75)));
 					colon.add(new CText(":",950,225+(i*75)));
 					bellScheduleGrid.getChildren().add(new CText(String.valueOf(i),700,225+(i*25)));
 					if(i!=0){bellScheduleGrid.getChildren().add(new CText(String.valueOf(i),700,225+(i*75)));}
 				}
-				hours.get(i).setMinSize(100, 50);hours.get(i).setMaxSize(100, 50);
-				hours.get(i).setLayoutX(800);hours.get(i).setLayoutY(200+(i*75));
-				minutes.get(i).setMinSize(100, 50);minutes.get(i).setMaxSize(100, 50);
-				minutes.get(i).setLayoutX(1000);minutes.get(i).setLayoutY(200+(i*75));
 			}
 			bellScheduleGrid.getChildren().addAll(colon);
 			bellScheduleGrid.getChildren().addAll(hours);
 			bellScheduleGrid.getChildren().addAll(minutes);
 
-			Button saveBellSchedule=new Button("Save");
+			CButton saveBellSchedule=new CButton("Save",880,900);
 			saveBellSchedule.setFont(tms50);
-			saveBellSchedule.setLayoutX(880);saveBellSchedule.setLayoutY(900);
 			bellScheduleGrid.getChildren().add(saveBellSchedule);
 
 			CText bellError=new CText("Please enter an integer from 0-24 or 0-60.",600,850);
@@ -240,13 +224,13 @@ public class Main extends Application {
 			
 			WebView checkOutSite=new WebView();
 			checkOutSite.getEngine().load("http://google.com");
-			checkOutSite.setLayoutX(500);checkOutSite.setLayoutY(100);
-			checkOutSite.setMaxSize(1000, 800);checkOutSite.setMinSize(1000, 800);
+			checkOutSite.setLayoutX((500/1920.0)*s.getWidth());checkOutSite.setLayoutY((100/1080.0)*s.getHeight());
+			checkOutSite.setMaxSize((1000/1920.0)*s.getWidth(), (800/1080.0)*s.getHeight());
+			checkOutSite.setMinSize((1000/1920.0)*s.getWidth(), (800/1080.0)*s.getHeight());
 			checkOutGrid.getChildren().add(checkOutSite);
 			
-			Button checkOutToEnterID=new Button("Back");
+			CButton checkOutToEnterID=new CButton("Back",900,950);
 			checkOutToEnterID.setFont(tms50);
-			checkOutToEnterID.setLayoutX(900);checkOutToEnterID.setLayoutY(950);
 			checkOutGrid.getChildren().add(checkOutToEnterID);
 			
 			checkOutGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -260,35 +244,24 @@ public class Main extends Application {
 			CText promptPredicted=new CText("To predicted teacher if student does not select him/her:",100,220);
 			editTemplateGrid.getChildren().add(promptPredicted);
 
-			TextArea predicted=new TextArea(Teacher.fileToString(new File("DoNotTouch/TheoreticalEmail")));
-			predicted.setMaxSize(800, 300);predicted.setMinSize(800, 300);
-			predicted.setWrapText(true);
-			predicted.setLayoutX(100);
-			predicted.setLayoutY(250);
+			CTextArea predicted=new CTextArea(Teacher.fileToString(new File("DoNotTouch/TheoreticalEmail")),800,300,100,250);
 			editTemplateGrid.getChildren().add(predicted);
 
 			CText promptNormal=new CText("To predicted teacher if student selects him/her:",100,620);
 			editTemplateGrid.getChildren().add(promptNormal);
 
-			TextArea normal=new TextArea(Teacher.fileToString(new File("DoNotTouch/NormalEmail")));
-			normal.setMaxSize(800, 300);normal.setMinSize(800, 300);
-			normal.setWrapText(true);
-			normal.setLayoutX(100);normal.setLayoutY(650);
+			CTextArea normal=new CTextArea(Teacher.fileToString(new File("DoNotTouch/NormalEmail")),800,300,100,650);
 			editTemplateGrid.getChildren().add(normal);
 
 			CText promptSignedPass=new CText("To selected teacher if they are not predicted teacher:",1000,220);
 			editTemplateGrid.getChildren().add(promptSignedPass);
 
-			TextArea signedPass=new TextArea(Teacher.fileToString(new File("DoNotTouch/SignedPassEmail")));
-			signedPass.setMaxSize(800, 300);signedPass.setMinSize(800, 300);
-			signedPass.setWrapText(true);
-			signedPass.setLayoutX(1000);signedPass.setLayoutY(250);
+			CTextArea signedPass=new CTextArea(Teacher.fileToString(new File("DoNotTouch/SignedPassEmail")),800,300,100,250);
 			editTemplateGrid.getChildren().add(signedPass);
 
 
-			Button editTemplateToSettings=new Button("Ok");
+			CButton editTemplateToSettings=new CButton("Ok",1300,600);
 			editTemplateToSettings.setFont(tms50);
-			editTemplateToSettings.setLayoutX(1300);editTemplateToSettings.setLayoutY(600);
 			editTemplateGrid.getChildren().add(editTemplateToSettings);
 
 			editTemplateGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -302,32 +275,27 @@ public class Main extends Application {
 			enterIDGrid.getChildren().add(promptID);
 			promptID.setTextAlignment(TextAlignment.CENTER);
 
-			TextField inID=new TextField();
+			CTextField inID=new CTextField("",800,100,500,500);
+			inID.setFont(tms50);
 			inID.setPromptText("Enter your student ID #");
-			inID.setLayoutX(500);inID.setLayoutY(500);
-			inID.setMinSize(800, 20);
 			enterIDGrid.getChildren().add(inID);
 
-			Button enterIDToPickClass=new Button("Sign in");
+			CButton enterIDToPickClass=new CButton("Sign in",800,750);
 			enterIDToPickClass.setFont(tms50);
-			enterIDToPickClass.setLayoutX(800);enterIDToPickClass.setLayoutY(750);
 			enterIDGrid.getChildren().add(enterIDToPickClass);
 			
-			Button goToCheckOut=new Button("Check out a book");
+			CButton goToCheckOut=new CButton("Check out a book",680,850);
 			goToCheckOut.setFont(tms50);
-			goToCheckOut.setLayoutX(680);goToCheckOut.setLayoutY(850);
 			enterIDGrid.getChildren().add(goToCheckOut);
 
 			CText idError=new CText("Please enter a valid Student ID",500,650);
 			idError.setVisible(false);
 			enterIDGrid.getChildren().add(idError);
 
-			Button terminate=new Button("Close");
-			terminate.setLayoutX(1750);terminate.setLayoutY(50);
+			CButton terminate=new CButton("Close",1750,50);
 			enterIDGrid.getChildren().add(terminate);
 
-			Button enterIDToSettings=new Button("Settings");
-			enterIDToSettings.setLayoutX(1550);enterIDToSettings.setLayoutY(50);
+			CButton enterIDToSettings=new CButton("Settings",1550,50);
 			enterIDGrid.getChildren().add(enterIDToSettings);
 
 			enterIDGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -341,20 +309,19 @@ public class Main extends Application {
 			promptPickClass.setFont(tms50);
 			pickClassGrid.getChildren().add(promptPickClass);
 
-			Button pickClassToOtherTeacher=new Button("Other");
+			CButton pickClassToOtherTeacher=new CButton("Other",1500,500);
 			pickClassToOtherTeacher.setFont(tms50);
-			pickClassToOtherTeacher.setLayoutX(1500);pickClassToOtherTeacher.setLayoutY(500);
 			pickClassGrid.getChildren().add(pickClassToOtherTeacher);
 
-			Button pickClassToEnterID=new Button("Back");
+			CButton pickClassToEnterID=new CButton("Back",100,500);
 			pickClassToEnterID.setFont(tms50);
-			pickClassToEnterID.setLayoutX(100);pickClassToEnterID.setLayoutY(500);
 			pickClassGrid.getChildren().add(pickClassToEnterID);
 
 			ObservableList<Class> classes=FXCollections.observableArrayList();
 			ListView<Class> classesList=new ListView<Class>(classes);
-			classesList.setMaxSize(700, 500);classesList.setMinSize(800, 600);
-			classesList.setLayoutX(500);classesList.setLayoutY(300);
+			setLocationSize(classesList,800,600,500,300);
+			pickClassGrid.getChildren().add(classesList);
+			
 			pickClassGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
 
 			//Other Teacher Elements
@@ -365,15 +332,13 @@ public class Main extends Application {
 			promptPickTeacher.setFont(tms50);
 			otherTeacherGrid.getChildren().add(promptPickTeacher);
 
-			Button otherTeacherToPickClass=new Button("Back");
+			CButton otherTeacherToPickClass=new CButton("Back",400,500);
 			otherTeacherToPickClass.setFont(tms50);
-			otherTeacherToPickClass.setLayoutX(400);otherTeacherToPickClass.setLayoutY(500);
 			otherTeacherGrid.getChildren().add(otherTeacherToPickClass);
 
+			
 			ListView<Teacher> listTeacher=new ListView<Teacher>(data);
-			listTeacher.setMaxSize(500, 700);listTeacher.setMinSize(500, 700);
-			listTeacher.setLayoutX(750);listTeacher.setLayoutY(200);
-
+			setLocationSize(listTeacher,500,700,750,200);
 			otherTeacherGrid.getChildren().add(listTeacher);
 
 			otherTeacher.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -388,20 +353,17 @@ public class Main extends Application {
 			pickReasonsGrid.getChildren().add(promptReasons);
 
 			ListView<String> listReasons=new ListView<String>(reasonsData);
-			listReasons.setMaxSize(500, 700);listReasons.setMinSize(500, 700);
-			listReasons.setLayoutX(750);listReasons.setLayoutY(200);
+			setLocationSize(listReasons,500,700,750,200);
 			pickReasonsGrid.getChildren().add(listReasons);
 
 			pickReasons.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
 
-			Button reasonsToOtherTeacher=new Button("Back");
+			CButton reasonsToOtherTeacher=new CButton("Back",400,500);
 			reasonsToOtherTeacher.setFont(tms50);
-			reasonsToOtherTeacher.setLayoutX(400);reasonsToOtherTeacher.setLayoutY(500);
 			pickReasonsGrid.getChildren().add(reasonsToOtherTeacher);
 
-			Button submit=new Button("Submit");
+			CButton submit=new CButton("Submit",1500,500);
 			submit.setFont(tms50);
-			submit.setLayoutX(1500);submit.setLayoutY(500);
 			pickReasonsGrid.getChildren().add(submit);
 			submit.setDisable(true);
 			submit.setId("submit");
@@ -417,16 +379,15 @@ public class Main extends Application {
 			adminToCloseGrid.getChildren().add(promptPassword);
 
 			CPasswordField enterPWordToClose=new CPasswordField("Enter password here",1000,100,480,400);
+			enterPWordToClose.setFont(tms50);
 			adminToCloseGrid.getChildren().add(enterPWordToClose);
 
-			Button close=new Button("Ok");
+			CButton close=new CButton("Ok",1020,700);
 			close.setFont(tms50);
-			close.setLayoutX(1020);close.setLayoutY(700);
 			adminToCloseGrid.getChildren().add(close);
 
-			Button cancelClose=new Button("Cancel");
+			CButton cancelClose=new CButton("Cancel",700,700);
 			cancelClose.setFont(tms50);
-			cancelClose.setLayoutX(700);cancelClose.setLayoutY(700);
 			adminToCloseGrid.getChildren().add(cancelClose);
 
 			CText wrongPassword=new CText("Wrong password!",500,600);
@@ -484,6 +445,7 @@ public class Main extends Application {
 				ID="";
 				inID.requestFocus();
 				idError.setVisible(false);
+				//s.setAlwaysOnTop(true);
 				s.setScene(enterID);	
 			});
 			classesList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Class>(){
@@ -558,9 +520,12 @@ public class Main extends Application {
 					backUp.println(focus.getFullName()+"\t"+focus.getID()+"\t"+Teacher.dateToString(false)+"\t"+theoretical+"\t"+notify+"\t"+reason);
 				}
 
-				inID.requestFocus();
+				
 				idError.setVisible(false);
 				inID.clear();
+				inID.requestFocus();
+				submit.setFont(tms50);
+				//s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			});
 			//Close Program
@@ -585,7 +550,10 @@ public class Main extends Application {
 							backUpFile.delete();
 						}
 						Platform.exit();
-					}else{s.setScene(settings);}
+					}else{
+						s.setAlwaysOnTop(false);
+						s.setScene(settings);
+						}
 				}else{
 					enterPWordToClose.clear();
 					wrongPassword.setVisible(true);
@@ -596,6 +564,7 @@ public class Main extends Application {
 				idError.setVisible(false);
 				enterPWordToClose.clear();
 				wrongPassword.setVisible(false);
+				//s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			});
 			terminate.setOnAction(e->{
@@ -620,6 +589,7 @@ public class Main extends Application {
 				FileError.setVisible(false);
 				pWordError.setVisible(false);
 				inID.clear();
+				//s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			});
 
@@ -724,6 +694,7 @@ public class Main extends Application {
 				}
 				if(validSchedule){
 					pwBell.close();
+					s.setAlwaysOnTop(false);
 					s.setScene(settings);
 					bell="Custom";
 				}
@@ -745,6 +716,7 @@ public class Main extends Application {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
+				s.setAlwaysOnTop(false);
 				s.setScene(settings);
 			});
 			
@@ -756,18 +728,21 @@ public class Main extends Application {
 					printReasons.println(reasonField.getText());
 					printReasons.close();
 				}catch(Exception d){}
+				s.setAlwaysOnTop(false);
 				s.setScene(settings);
 			});
 
 			if(validInit){
+				//s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			}else{
 				s.setScene(settings);
+				s.setAlwaysOnTop(false);
 			}
 
 		}catch(Exception e) {
-			e.printStackTrace();
 			s.setScene(settings);
+			s.setAlwaysOnTop(false);
 		}
 	}
 	public static Teacher getAdmin(){
@@ -800,6 +775,11 @@ public class Main extends Application {
 			}while(id.equals(quals[3])&&s.hasNextLine());
 			students.get(students.size()-1).sortClass();
 		}
+	}
+	public static void setLocationSize(Control o, double xs, double ys, double x, double y){
+		o.setMaxSize((xs/1920)*CText.width,(ys/1080)*CText.height);
+		o.setMinSize((xs/1920)*CText.width,(ys/1080)*CText.height);
+		o.setLayoutX((x/1920)*CText.width);o.setLayoutY((y/1080)*CText.height);
 	}
 	public Student searchStudent(String findThisID){
 		for(Student s: students){

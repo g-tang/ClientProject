@@ -1,18 +1,21 @@
 package application;
 
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 public class CText extends Text{
-	public static double width=0;
-	public static double height=0;
+	static double width;
+	static double height;
 	public CText(String s, double x, double y){
 		super(s);
 		setX((x/1920)*width);
 		setY((y/1080)*height);
 		setId("text");
+		setFont(new Font("Trebuchet MS",(30.0/1920)*width));
 	}
-	public static void setDims(double a, double b){
-		width=a;height=b;
+	public static void setDim(double x, double y){
+		width=x;
+		height=y;
 	}
 }
+

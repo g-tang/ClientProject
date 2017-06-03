@@ -2,6 +2,9 @@
 	-fx-padding:0;
 	-fx-background-insets:0;
 }
+.list-cell{
+	-fx-font: 23pt "Trebuchet MS";
+}
 .list-cell:filled:selected{
 	-fx-background-insets:0;
 	-fx-background-color:rgb(252,194,27);
@@ -16,7 +19,6 @@
 	-fx-background-radius:10;
 }
 .root{
-	-fx-font: 23pt "Trebuchet MS";
 	-fx-background:rgb(20,20,20);
 	
 }
@@ -36,16 +38,13 @@
 	-fx-accent:rgb(20,20,20);
 	-fx-focus-color:rgb(252,194,27);
 }
-.button{
+#button{
 	-fx-background-radius:10;
 	-fx-background-color:linear-gradient(#E5E4E2,#C0C0C0);
 	-fx-text-fill:rgb(0,0,0)
 }
-.button:hover{
+#button:hover{
 	-fx-background-color:linear-gradient(rgb(255,200,100),rgb(240,190,40));
-}
-#submit{
-	-fx-font:40pt "Trebuchet MS";
 }
 #submit:focused{
 	-fx-focus-color:#000000;
