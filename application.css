@@ -1,3 +1,59 @@
+.list-view{
+	-fx-padding:0;
+	-fx-background-insets:0;
+}
 .list-cell{
-	-fx-font: 20pt "Oxygen";
+	-fx-font: 23pt "Trebuchet MS";
+}
+.list-cell:filled:selected{
+	-fx-background-insets:0;
+	-fx-background-color:rgb(252,194,27);
+}
+.list-cell:filled:hover{
+	-fx-background-color:linear-gradient(rgb(255,220,50),rgb(252,194,27)); 
+}
+.list-cell{
+	-fx-text-fill:rgb(0,0,0);
+}
+.combo-box{
+	-fx-background-radius:10;
+}
+.root{
+	-fx-background:rgb(20,20,20);
+	
+}
+.text-area{
+	-fx-background-radius:10;
+	-fx-border-radius:10;
+}
+.text{
+	-fx-text-fill:rgb(0,0,0);
+}
+#text{
+	-fx-fill:rgb(252,194,27);
+	 
+}
+.text-field{
+	-fx-background-radius:10;
+	-fx-accent:rgb(20,20,20);
+	-fx-focus-color:rgb(252,194,27);
+}
+#button{
+	-fx-background-radius:10;
+	-fx-background-color:linear-gradient(#E5E4E2,#C0C0C0);
+	-fx-text-fill:rgb(0,0,0)
+}
+#button:hover{
+	-fx-background-color:linear-gradient(rgb(255,200,100),rgb(240,190,40));
+}
+#submit{
+	-fx-background-radius:10;
+}
+#submit:focused{
+	-fx-focus-color:#000000;
+	-fx-font-size:1pt;
+	-fx-min-height:215px;-fx-max-height:215px;
+	-fx-min-width:285px;-fx-max-width:285px;
+	-fx-background-image:url(thankYou.PNG); 
+	-fx-effect:dropshadow(gaussian,#000000,100,0,0,0);
 }
