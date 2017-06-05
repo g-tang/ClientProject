@@ -11,6 +11,6 @@ public class CPasswordField extends PasswordField{
 		setMaxSize((sx/1920)*CText.width,(sy/1080)*CText.height);
 		setLayoutX((x/1920)*CText.width);
 		setLayoutY((y/1080)*CText.height);
-		setFont(new Font("Trebuchet MS",(30.0/1920)*CText.width));
+		setFont(new Font("Avenir Next",27));
 	}
 }

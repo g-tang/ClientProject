@@ -3,7 +3,7 @@
 	-fx-background-insets:0;
 }
 .list-cell{
-	-fx-font: 23pt "Trebuchet MS";
+	-fx-font: 20pt "Avenir Next";
 }
 .list-cell:filled:selected{
 	-fx-background-insets:0;
@@ -54,6 +54,6 @@
 	-fx-font-size:1pt;
 	-fx-min-height:215px;-fx-max-height:215px;
 	-fx-min-width:285px;-fx-max-width:285px;
-	-fx-background-image:url(thankYou.PNG); 
+	-fx-background-image:url(../../DoNotTouch/thankYou.PNG); 
 	-fx-effect:dropshadow(gaussian,#000000,100,0,0,0);
 }

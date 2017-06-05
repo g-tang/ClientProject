@@ -11,7 +11,7 @@ public class CText extends Text{
 		setX((x/1920)*width);
 		setY((y/1080)*height);
 		setId("text");
-		setFont(new Font("Trebuchet MS",(30.0/1920)*width));
+		setFont(new Font("Avenir Next",27));
 	}
 	public static void setDim(double x, double y){
 		width=x;

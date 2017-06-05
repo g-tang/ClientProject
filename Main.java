@@ -61,7 +61,7 @@ public class Main extends Application {
 			Platform.setImplicitExit(false);
 			s.show();
 			CText.setDim(s.getWidth(), s.getHeight());
-			Font tms50=new Font("Trebuchet MS", (50.0/1920)*CText.width);
+			Font tms50=new Font("Avenir Next", 45);
 			File backUpFile=new File(new Date().getMonth()+"_"+new Date().getDate()+"_MCLog");
 			backUp=new PrintWriter(backUpFile);
 			System.out.println(s.getWidth());
@@ -184,7 +184,8 @@ public class Main extends Application {
 			Pane reasonEdGrid=new Pane();
 			Scene reasonEd=new Scene(reasonEdGrid,s.getWidth(),s.getHeight());
 
-			CText reasonPrompt=new CText("Edit potential visit reasons below, \ninserting a carriage return after each one.",700,50);
+			CText reasonPrompt=new CText("Edit potential visit reasons below, \ninserting a carriage return after each one.",600,50);
+			reasonPrompt.setFont(tms50);
 			reasonEdGrid.getChildren().add(reasonPrompt);
 
 			CTextArea reasonField=new CTextArea(Teacher.fileToString(new File("DoNotTouch/Reasons")),800,700,550,150);
@@ -205,7 +206,7 @@ public class Main extends Application {
 			ArrayList<CText> colon=new ArrayList<CText>();
 			ArrayList<String[]> bellSched=null;
 			try{bellSched=Student.parseBellSchedule("Custom");}catch(Exception e){}
-			bellScheduleGrid.getChildren().add(new CText("School Starts:",700,225));
+			bellScheduleGrid.getChildren().add(new CText("School Starts:",550,225));
 			for(int i=0;i<9;i++){
 				try{
 					hours.add(new CTextField(bellSched.get(i)[0],100,50,800,200+(i*75)));
@@ -241,7 +242,7 @@ public class Main extends Application {
 			//Edit Email Files
 			Pane editTemplateGrid=new Pane();
 			Scene editTemplate=new Scene(editTemplateGrid, s.getWidth(),s.getHeight());
-			CText editTemplateInstructions=new CText("    Key: <THEORETICAL>-name of predicted teacher   <TIME>-date and time\n<SIGNEDPASS>-name of selected teacher    <STUDENTNAME>-name of student",500,100);
+			CText editTemplateInstructions=new CText("Key: <THEORETICAL>-name of predicted teacher   <TIME>-date and time	\n<ID>-ID number	<SIGNEDPASS>-name of selected teacher    \n<STUDENTNAME>-name of student	<REASON>-reason for visit",500,50);
 			editTemplateGrid.getChildren().add(editTemplateInstructions);
 
 			CText promptPredicted=new CText("To predicted teacher if student does not select him/her:",100,220);
@@ -269,26 +270,26 @@ public class Main extends Application {
 
 			editTemplateGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
 
-			//Enter Your Student ID Interface Elements
+			//Enter Your Student ID
 			Pane enterIDGrid=new Pane();
 			Scene enterID=new Scene(enterIDGrid, s.getWidth(),s.getHeight());
 
-			CText promptID=new CText("To sign in, enter your student ID number below or \nscan your card. Then press \"Enter\" or click \"Sign in\".",400,300);
+			CText promptID=new CText("Type or scan student ID",700,300);
 			promptID.setFont(tms50);
 			enterIDGrid.getChildren().add(promptID);
 			promptID.setTextAlignment(TextAlignment.CENTER);
 
-			CTextField inID=new CTextField("",800,100,500,500);
+			CTextField inID=new CTextField("",800,100,550,500);
 			inID.setFont(tms50);
 			inID.setPromptText("Enter your student ID #");
 			enterIDGrid.getChildren().add(inID);
 
-			CButton enterIDToPickClass=new CButton("Sign in",800,700);
+			CButton enterIDToPickClass=new CButton("Sign in",825,700);
 			enterIDToPickClass.setFont(tms50);
+			enterIDToPickClass.setDefaultButton(true);
 			enterIDGrid.getChildren().add(enterIDToPickClass);
 
-			CButton goToCheckOut=new CButton("Check out a book",680,850);
-			goToCheckOut.setFont(tms50);
+			CButton goToCheckOut=new CButton("Check out a book",50,50);
 			enterIDGrid.getChildren().add(goToCheckOut);
 
 			CText idError=new CText("Please enter a valid Student ID",500,650);
@@ -324,21 +325,21 @@ public class Main extends Application {
 			Pane pickClassGrid=new Pane();
 			Scene pickClass=new Scene(pickClassGrid, s.getWidth(), s.getHeight());
 
-			CText promptPickClass=new CText("",300,200);
+			CText promptPickClass=new CText("",400,200);
 			promptPickClass.setFont(tms50);
 			pickClassGrid.getChildren().add(promptPickClass);
 
-			CButton pickClassToOtherTeacher=new CButton("Other\nTeacher",1500,450);
+			CButton pickClassToOtherTeacher=new CButton("Other\nTeacher",1600,450);
 			pickClassToOtherTeacher.setFont(tms50);
 			pickClassGrid.getChildren().add(pickClassToOtherTeacher);
 
-			CButton pickClassToEnterID=new CButton("Back",100,500);
+			CButton pickClassToEnterID=new CButton("Back",200,500);
 			pickClassToEnterID.setFont(tms50);
 			pickClassGrid.getChildren().add(pickClassToEnterID);
 
 			ObservableList<Class> classes=FXCollections.observableArrayList();
 			ListView<Class> classesList=new ListView<Class>(classes);
-			setLocationSize(classesList,800,600,500,300);
+			setLocationSize(classesList,800,600,600,300);
 			pickClassGrid.getChildren().add(classesList);
 
 			pickClassGrid.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -437,15 +438,13 @@ public class Main extends Application {
 					inID.clear();
 				}
 			});
-			inID.setOnAction(e->{
-				enterIDToPickClass.fire();
-			});
 			enterIDToSettings.setOnAction(e->{
 				toClose=false;
 				enterPWordToClose.requestFocus();
 				s.setScene(adminToClose);
 			});
 			goToCheckOut.setOnAction(e->{
+				checkOutSite.getEngine().load("http://google.com");
 				s.setScene(checkOut);
 			});
 
@@ -455,7 +454,7 @@ public class Main extends Application {
 			});
 			//Pick Class
 			pickClassToOtherTeacher.setOnAction(e->{
-				try{listTeacher.getSelectionModel().clearSelection();}catch(Exception d){System.out.println("CLEAR ERROR 497!!!");}
+				try{listTeacher.getSelectionModel().clearSelection();}catch(Exception d){}
 				s.setScene(otherTeacher);
 			});
 			pickClassToEnterID.setOnAction(e->{
@@ -515,28 +514,24 @@ public class Main extends Application {
 				}
 			});
 			submit.setOnAction(e->{
-				try{
-					try{theoretical=Student.getTheoreticalTeacher(focus.getSchedule(1), bell);}catch(Exception d){}
+					try{theoretical=Student.getTheoreticalTeacher(focus.getSchedule(semester), bell);}catch(Exception d){}
 					try{theoretical=theoretical.findTeacher(teachers);}catch(Exception d){}
 					try{notify=notify.findTeacher(teachers);}catch(Exception d){}
-					administrator.sendEmail(new File("DoNotTouch/AdminEmail"), theoretical, notify, focus,reason);
+					try{administrator.sendEmail(new File("DoNotTouch/AdminEmail"), theoretical, notify, focus,reason);}catch(Exception f){backUp.println(focus.getFullName()+"\t"+focus.getID()+"\t"+Teacher.dateToString(false)+"\t"+theoretical+"\t"+notify+"\t"+reason);}
 					System.out.println("Send admin email to" +administrator.getEmail());
 					if(theoretical!=null){
 						if(theoretical.toString().equals(notify.toString())){
 							System.out.println("Send normal email to "+notify.getEmail());
-							//					notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus,reason);
+							try{notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
 						}else{
 							System.out.println("Send mismatch case emails to "+notify.getEmail()+" and "+theoretical.getEmail());
-							//					notify.sendEmail(new File("SignedPassEmail"), theoretical, notify, focus,reason);
-							//					theoretical.sendEmail(new File("DoNotTouch/TheoreticalEmail"), theoretical, notify, focus,reason);
+							try{notify.sendEmail(new File("SignedPassEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
+							try{theoretical.sendEmail(new File("DoNotTouch/TheoreticalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
 						}
 					}else{
 						System.out.println("Send Normal email to "+notify.getEmail());
-						//		notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus);
+							try{notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
 					}
-				}catch(Exception f){
-					backUp.println(focus.getFullName()+"\t"+focus.getID()+"\t"+Teacher.dateToString(false)+"\t"+theoretical+"\t"+notify+"\t"+reason);
-				}
 
 
 				idError.setVisible(false);
