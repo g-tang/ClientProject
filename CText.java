@@ -8,8 +8,8 @@ public class CText extends Text{
 	static double height;
 	public CText(String s, double x, double y){
 		super(s);
-		setX((x/1920)*width);
-		setY((y/1080)*height);
+		setX(x);
+		setY(y);
 		setId("text");
 		setFont(new Font("Avenir Next",27));
 	}

@@ -40,7 +40,7 @@ public class Teacher implements Comparable<Teacher>{
 				while(s.hasNextLine()){
 					message+=s.nextLine()+"\n";
 				}
-			} catch (Exception e) {System.out.println("Template error");}
+			} catch (Exception e) {e.printStackTrace();System.out.println("Template error");}
 			message=message.replaceAll("<SIGNEDPASS>", signedPass.toString());
 			if(theoretical!=null){message=message.replaceAll("<THEORETICAL>", theoretical.toString());}else{message=message.replaceAll("<THEORETICAL>", "N/A");}
 			message=message.replaceAll("<STUDENTNAME>", st.getFullName());
@@ -48,8 +48,9 @@ public class Teacher implements Comparable<Teacher>{
 			message=message.replaceAll("<REASON>", r);
 			message=message.replaceAll("<ID>", st.getID());
 			System.out.println(message);
-			EmailUtil.sendEmail(this.email, "A student has signed into the Media Center", message);
+			EmailUtil.sendEmail(this.email, "A student has signed into the PHS Media Center", message);
 		}catch(UnsupportedEncodingException | MessagingException e){
+			e.printStackTrace();
 			System.out.println("Email Error");
 			EmailUtil.sendEmail(Main.getAdmin().getEmail(),"Failed notification: Does "+this+" have a valid email?", message);
 			throw new Exception();

@@ -46,14 +46,20 @@
 #button:hover{
 	-fx-background-color:linear-gradient(rgb(255,200,100),rgb(240,190,40));
 }
+#enterID{
+	-fx-background-image:url(../../DoNotTouch/Wings.PNG);
+	-fx-background-position:center;
+}
 #submit{
 	-fx-background-radius:10;
 }
 #submit:focused{
-	-fx-focus-color:#000000;
+	-fx-focus-color:rgb(20,20,20);
 	-fx-font-size:1pt;
-	-fx-min-height:215px;-fx-max-height:215px;
-	-fx-min-width:285px;-fx-max-width:285px;
-	-fx-background-image:url(../../DoNotTouch/thankYou.PNG); 
-	-fx-effect:dropshadow(gaussian,#000000,100,0,0,0);
+	-fx-min-height:285px;-fx-max-height:285px;
+	-fx-min-width:215px;-fx-max-width:215px;
+	-fx-background-color:rgb(20,20,20); 
+	-fx-background-image:url(../../DoNotTouch/ThankYou.PNG); 
+	-fx-background-repeat:no-repeat;
+	-fx-effect:dropshadow(gaussian,rgb(20,20,20),100,0,0,0);
 }

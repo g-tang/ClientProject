@@ -6,8 +6,8 @@ import javafx.scene.text.Font;
 public class CButton extends Button{
 	public CButton(String s, double x, double y){
 		super(s);
-		setLayoutX((x/1920)*CText.width);
-		setLayoutY((y/1080)*CText.height);
+		setLayoutX(x);
+		setLayoutY(y);
 		setFont(new Font("Avenir Next",27));
 		setId("button");
 	}
