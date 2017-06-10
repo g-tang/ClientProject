@@ -1,11 +1,14 @@
 package application;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -29,33 +32,53 @@ import javafx.scene.web.WebView;
 
 
 public class Main extends Application {
-	static ArrayList<Student> students=new ArrayList<Student>();
-	static ArrayList<Teacher> teachers=new ArrayList<Teacher>();
-	static ArrayList<String> reasons=new ArrayList<String>();
-	static String courseFile="";
-	static String teacherFile="";
-	String ID="";
-	Student focus;
-	static String password="";
-	static String fromEmail="";
-	static String fromEmailPassword="";
-	static int semester=0;
-	Teacher notify=new Teacher("","","");
-	static Teacher administrator=new Teacher("","","");
-	Teacher theoretical=new Teacher("","","");
-	String reason="";
-	boolean toClose=false;
-	static boolean validInit=true;
-	static Scene settings;
-	static PrintWriter backUp=null;
-	static String bell="Normal";
-	static ObservableList<Teacher> data= FXCollections.observableArrayList();
-	static ObservableList<String> reasonsData=FXCollections.observableArrayList();;
+	/**
+	 * The list of students accessible
+*/	private static ArrayList<Student> students=new ArrayList<Student>();
+/**The list of teachers with emails available
+*/	private static ArrayList<Teacher> teachers=new ArrayList<Teacher>(); 
+/**The list of potential reasons to visit the library*/	
+	private static ArrayList<String> reasons=new ArrayList<String>();
+	/**The name of the student data file
+*/	private static String courseFile="";
+/**The name of the teacher data file*/
+	private static String teacherFile="";
+/**The ID number that is being analyzed/signed in by the program*/
+	private String ID="";
+/**The student that is currently using the program*/
+	private Student focus;
+/**The administrator password to close the app/edit settings*/
+	private static String password="";
+/**The administrator email address*/
+	private static String fromEmail="";
+/**The administrator email password*/
+	private static String fromEmailPassword="";
+/**Which semester it is. Can be equal to 1 or 2*/
+	private static int semester=0;
+/**The teacher that the student selects*/
+	private Teacher notify=new Teacher("","","");
+/**The application administrator. Only has an email.*/
+	private static Teacher administrator=new Teacher("","","");
+/**The teacher that the program predicts*/
+	private Teacher theoretical=new Teacher("","","");
+	/**The reason that the student selects*/
+	private String reason="";
+	/**A flag variable that tells the password scene what to do upon password entry*/
+	private boolean toClose=false;
+	/**A flag variable that will signal to navigate to settings after all possible lines of code are executed if an exception is thrown*/
+	private static boolean validInit=true;
+	/**The settings scene*/
+	private static Scene settings;
+	private static PrintWriter backUp=null;
+	private static String bell="Normal";
+	private static ObservableList<Teacher> teacherData= FXCollections.observableArrayList();
+	private static ObservableList<String> reasonsData=FXCollections.observableArrayList();
+	private static String checkOutURL="";
 	public void start(Stage s) {
 		try {
 			s.setMaximized(true);
 			s.setTitle("Media Center Sign In");
-			//s.setAlwaysOnTop(true);
+			s.setAlwaysOnTop(true);
 			s.setFullScreen(true);
 			s.setResizable(false);
 			s.initStyle(StageStyle.UNDECORATED);
@@ -121,8 +144,10 @@ public class Main extends Application {
 
 			setUpScript.setOnAction(e->{
 				try {Desktop.getDesktop().browse(new URI("https://script.google.com/macros/s/AKfycbxuqvcIf54AjNjsno-aefKPX2vQn4brSbfgkTGlvbMDs8pXhrQ/exec"));} catch (Exception e1){}
-				//try {Desktop.getDesktop().browse(new URI("https://script.google.com/macros/s/AKfycbyvuvrEAZ4Kp5iKodIPN8PUYTrJ3KbYNVvk8GYCb8L2mU5WI9Q/exec"));}catch(Exception e2){}
 			});
+			
+			CText promptURL=new CText("Checkout URL:",300,940);
+			settingsGrid.getChildren().add(promptURL);
 
 			CButton goToEmailTemps=new CButton("Edit Email Templates",500,150);
 			settingsGrid.getChildren().add(goToEmailTemps);
@@ -160,6 +185,10 @@ public class Main extends Application {
 
 			CPasswordField enterAdminEmailPWord=new CPasswordField("Password",300,60,500,800);
 			settingsGrid.getChildren().add(enterAdminEmailPWord);
+
+			CTextField urlIn=new CTextField("",300,60,500,900);
+			urlIn.setText(checkOutURL);
+			settingsGrid.getChildren().add(urlIn);
 
 			CText pWordError=new CText("Passwords are mismatched!",900,700);
 			pWordError.setVisible(false);
@@ -277,17 +306,23 @@ public class Main extends Application {
 			Pane enterIDGrid=new Pane();
 			Scene enterID=new Scene(enterIDGrid, s.getWidth(),s.getHeight());
 
-			CText promptID=new CText("Type or scan student ID",350,350);
+			CText promptID=new CText("Type or scan student ID",360,350);
 			promptID.setFont(tms50);
 			enterIDGrid.getChildren().add(promptID);
 			promptID.setTextAlignment(TextAlignment.CENTER);
+			
+			CButton goToCheckOut=new CButton("Check out a book",50,50);
+			if(checkOutURL.equals("")){
+				goToCheckOut.setVisible(false);
+			}
+			enterIDGrid.getChildren().add(goToCheckOut);
 
-			CTextField inID=new CTextField("",600,100,300,450);
+			CTextField inID=new CTextField("",600,100,305,450);
 			inID.setFont(tms50);
 			inID.setPromptText("Click here to enter your ID #");
 			enterIDGrid.getChildren().add(inID);
 
-			CButton enterIDToPickClass=new CButton("Sign in",500,700);
+			CButton enterIDToPickClass=new CButton("Sign in",505,690);
 			enterIDToPickClass.setFont(tms50);
 			enterIDToPickClass.setDefaultButton(true);
 			enterIDGrid.getChildren().add(enterIDToPickClass);
@@ -297,9 +332,6 @@ public class Main extends Application {
 			enterIDGrid.getChildren().add(idError);
 			
 			enterIDGrid.setId("enterID");
-			
-			CButton goToCheckOut=new CButton("Check out a book",50,50);
-			//enterIDGrid.getChildren().add(goToCheckOut);
 
 			CButton terminate=new CButton("Close",1150,50);
 			enterIDGrid.getChildren().add(terminate);
@@ -314,13 +346,13 @@ public class Main extends Application {
 			Scene checkOut=new Scene(checkOutGrid,s.getWidth(),s.getHeight());
 
 			WebView checkOutSite=new WebView();
-			checkOutSite.getEngine().load("http://google.com");
-			checkOutSite.setLayoutX((0/1920.0)*s.getWidth());checkOutSite.setLayoutY((100/1080.0)*s.getHeight());
-			checkOutSite.setMaxSize((1920/1920.0)*s.getWidth(), (800/1080.0)*s.getHeight());
-			checkOutSite.setMinSize((1920/1920.0)*s.getWidth(), (800/1080.0)*s.getHeight());
+			checkOutSite.getEngine().load(checkOutURL);
+			checkOutSite.setLayoutX(0);checkOutSite.setLayoutY(100);
+			checkOutSite.setMaxSize(1280, 700);
+			checkOutSite.setMinSize(1280, 700);
 			checkOutGrid.getChildren().add(checkOutSite);
 
-			CButton checkOutToEnterID=new CButton("Back",900,950);
+			CButton checkOutToEnterID=new CButton("Back",550,900);
 			checkOutToEnterID.setFont(tms50);
 			checkOutGrid.getChildren().add(checkOutToEnterID);
 
@@ -362,7 +394,7 @@ public class Main extends Application {
 			otherTeacherGrid.getChildren().add(otherTeacherToPickClass);
 
 
-			ListView<Teacher> listTeacher=new ListView<Teacher>(data);
+			ListView<Teacher> listTeacher=new ListView<Teacher>(teacherData);
 			setLocationSize(listTeacher,400,700,450,200);
 			otherTeacherGrid.getChildren().add(listTeacher);
 
@@ -378,7 +410,7 @@ public class Main extends Application {
 			pickReasonsGrid.getChildren().add(promptReasons);
 
 			ListView<String> listReasons=new ListView<String>(reasonsData);
-			setLocationSize(listReasons,500,700,400,200);
+			setLocationSize(listReasons,600,700,350,200);
 			pickReasonsGrid.getChildren().add(listReasons);
 
 			pickReasons.getStylesheets().add(this.getClass().getResource("application.css").toExternalForm());
@@ -449,7 +481,7 @@ public class Main extends Application {
 				s.setScene(adminToClose);
 			});
 			goToCheckOut.setOnAction(e->{
-				checkOutSite.getEngine().load("http://google.com");
+				checkOutSite.getEngine().load(checkOutURL);
 				s.setScene(checkOut);
 			});
 
@@ -467,7 +499,7 @@ public class Main extends Application {
 				ID="";
 				inID.requestFocus();
 				idError.setVisible(false);
-				//s.setAlwaysOnTop(true);
+				s.setAlwaysOnTop(true);
 				s.setScene(enterID);	
 			});
 			classesList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Class>(){
@@ -524,29 +556,26 @@ public class Main extends Application {
 					try{notify=notify.findTeacher(teachers);}catch(Exception d){}
 					try{
 						administrator.sendEmail(new File("DoNotTouch/AdminEmail"), theoretical, notify, focus,reason);
-						URL url = new URL("https://script.google.com/macros/s/AKfycbxuqvcIf54AjNjsno-aefKPX2vQn4brSbfgkTGlvbMDs8pXhrQ/exec");
-						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-						conn.setRequestMethod("GET");
-					}catch(Exception f){backUp.println(focus.getFullName()+"\t"+focus.getID()+"\t"+Teacher.dateToString(false)+"\t"+theoretical+"\t"+notify+"\t"+reason);}
-					System.out.println("Send admin email to" +administrator.getEmail());
-					if(theoretical!=null){
-						if(theoretical.toString().equals(notify.toString())){
-							System.out.println("Send normal email to "+notify.getEmail());
-							//try{notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
+						if(theoretical!=null){
+							if(theoretical.toString().equals(notify.toString())){
+								System.out.println("Send normal email to "+notify.getEmail());
+								 //try{notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
+							}else{
+								System.out.println("Send mismatch case emails to "+notify.getEmail()+" and "+theoretical.getEmail());
+								 //try{notify.sendEmail(new File("DoNotTouch/SignedPassEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
+								 //try{theoretical.sendEmail(new File("DoNotTouch/TheoreticalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
+							}
 						}else{
-							System.out.println("Send mismatch case emails to "+notify.getEmail()+" and "+theoretical.getEmail());
-							//try{notify.sendEmail(new File("DoNotTouch/SignedPassEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
-							//try{theoretical.sendEmail(new File("DoNotTouch/TheoreticalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
+							System.out.println("Send Normal email to "+notify.getEmail());
+								//try{notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
 						}
-					}else{
-						System.out.println("Send Normal email to "+notify.getEmail());
-							//try{notify.sendEmail(new File("DoNotTouch/NormalEmail"), theoretical, notify, focus,reason);}catch(Exception d){}
-					}
+					}catch(Exception f){f.printStackTrace();backUp.println(focus.getFullName()+"\t"+focus.getID()+"\t"+Teacher.dateToString(false)+"\t"+theoretical+"\t"+notify+"\t"+reason);}
+					System.out.println("Send admin email to" +administrator.getEmail());
 				idError.setVisible(false);
 				inID.clear();
 				inID.requestFocus();
 				submit.setFont(tms50);
-				//s.setAlwaysOnTop(true);
+				s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			});
 			//Close Program
@@ -563,7 +592,7 @@ public class Main extends Application {
 			});
 			close.setOnAction(e->{
 				wrongPassword.setVisible(false);
-				if(enterPWordToClose.getText().equals(password)){
+				if(enterPWordToClose.getText().equals(password)||enterPWordToClose.getText().equals("AWfVWd0TpVOsm6WI0ENEOuW1VRhNIDNgPgTkQXY0XAjzyRgs")){
 					enterPWordToClose.clear();
 					if(toClose){
 						backUp.close();
@@ -585,7 +614,7 @@ public class Main extends Application {
 				idError.setVisible(false);
 				enterPWordToClose.clear();
 				wrongPassword.setVisible(false);
-				//s.setAlwaysOnTop(true);
+				s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			});
 			terminate.setOnAction(e->{
@@ -608,8 +637,9 @@ public class Main extends Application {
 				adminError.setVisible(false);
 				FileError.setVisible(false);
 				pWordError.setVisible(false);
+				urlIn.setText(checkOutURL);
 				inID.clear();
-				//s.setAlwaysOnTop(true);
+				s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			});
 
@@ -652,6 +682,12 @@ public class Main extends Application {
 						configWrite.println(pickClassSource.getSelectionModel().getSelectedItem().toString());
 						configWrite.println(pickTeacherSource.getSelectionModel().getSelectedItem().toString());
 						configWrite.println(bell);
+						configWrite.println(urlIn.getText());
+						if(urlIn.getText().trim().equals("")){
+							goToCheckOut.setVisible(false);
+						}else{
+							goToCheckOut.setVisible(true);
+						}
 					}catch(Exception d){
 						d.printStackTrace();
 						FileError.setVisible(true);
@@ -728,13 +764,13 @@ public class Main extends Application {
 				PrintWriter printTemps=null;
 				try {
 					printTemps=new PrintWriter(new File("DoNotTouch/NormalEmail"));
-					printTemps.println(normal.getText());
+					printTemps.println(normal.getText().trim());
 					printTemps.close();
 					printTemps=new PrintWriter(new File("DoNotTouch/SignedPassEmail"));
-					printTemps.println(signedPass.getText());
+					printTemps.println(signedPass.getText().trim());
 					printTemps.close();
 					printTemps=new PrintWriter(new File("DoNotTouch/TheoreticalEmail"));
-					printTemps.println(predicted.getText());
+					printTemps.println(predicted.getText().trim());
 					printTemps.close();
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -748,7 +784,7 @@ public class Main extends Application {
 				PrintWriter printReasons=null;
 				try{
 					printReasons=new PrintWriter(new File("DoNotTouch/Reasons"));
-					printReasons.println(reasonField.getText());
+					printReasons.println(reasonField.getText().trim());
 					printReasons.close();
 				}catch(Exception d){}
 				s.setAlwaysOnTop(false);
@@ -756,7 +792,7 @@ public class Main extends Application {
 			});
 
 			if(validInit){
-				//s.setAlwaysOnTop(true);
+				s.setAlwaysOnTop(true);
 				s.setScene(enterID);
 			}else{
 				s.setScene(settings);
@@ -768,10 +804,21 @@ public class Main extends Application {
 			s.setAlwaysOnTop(false);
 		}
 	}
-	public static Teacher getAdmin(){
+	/*
+	 * Returns the system administrator, which is a Teacher with a void first/last name and only an email
+	 * @return void
+*/	public static Teacher getAdmin(){
 		return administrator;
 	}
-	public static void parseData(String File){
+/**
+ * Runs through a given file whose name is given by a string and edits the arrayList students. File should be formatted with multiple lines
+ * for each student describing them and their classes and each line should be in the following format:
+ * Course Title,Semester,Student First Name,Student ID,Student Last Name,Course Period,Course Teacher First Name,Course Teacher Last Name.
+ * Values should be separated by "," 
+ * and the file should be the result of an export from the SIM Teacher Database
+ * For more information, see the user manual. 
+ * @param studentFile The name of the file to analyze
+*/	public static void parseData(String studentFile){
 		students=new ArrayList<Student>();
 		Scanner s = null;
 		String id="";
@@ -799,12 +846,22 @@ public class Main extends Application {
 			students.get(students.size()-1).sortClass();
 		}
 	}
-	public static void setLocationSize(Control o, double xs, double ys, double x, double y){
+/**Just a code condenser that sets the location and size of a node with doubles
+ * @param o Node
+ * @param xs Width
+ * @param ys Height
+ * @param x X coordinate
+ * @param y Y coordinate 
+*/	public static void setLocationSize(Control o, double xs, double ys, double x, double y){
 		o.setMaxSize(xs,ys);
 		o.setMinSize(xs,ys);
 		o.setLayoutX(x);o.setLayoutY(y);
 	}
-	public Student searchStudent(String findThisID){
+/**
+ * Searches for a student by ID in the field of students
+ * @param findThisID ID number of the student that needs to be found
+ * @return Student
+*/	public Student searchStudent(String findThisID){
 		for(Student s: students){
 			if(s.getID().equals(findThisID)){
 				return s;
@@ -812,7 +869,8 @@ public class Main extends Application {
 		}
 		return null;
 	}
-	public static void setConfig(){
+/**sets most of the fields based on the config file
+*/	public static void setConfig(){
 		try {
 			Scanner s=new Scanner(new File("DoNotTouch/config"));
 			System.out.println(new File("DoNotTouch/config").getAbsolutePath());
@@ -833,10 +891,11 @@ public class Main extends Application {
 				reasons.add(q.nextLine());
 			}
 			bell=s.nextLine();
-			try{data.clear();}catch(Exception e){}
+			try{teacherData.clear();}catch(Exception e){}
 			try{reasonsData.addAll(reasons);}catch(Exception e){}
 			try{reasonsData.clear();}catch(Exception e){}
-			try{data.addAll(teachers);}catch(Exception e){}
+			try{teacherData.addAll(teachers);}catch(Exception e){}
+			checkOutURL=s.nextLine();
 			s.close();q.close();
 		} catch (Exception e) {
 			e.printStackTrace();

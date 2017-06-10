@@ -61,5 +61,5 @@
 	-fx-background-color:rgb(20,20,20); 
 	-fx-background-image:url(../../DoNotTouch/ThankYou.PNG); 
 	-fx-background-repeat:no-repeat;
-	-fx-effect:dropshadow(gaussian,rgb(20,20,20),100,0,0,0);
+	-fx-effect:dropshadow(gaussian,rgb(20,20,20),150,0,0,0);
 }

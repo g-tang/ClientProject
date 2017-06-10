@@ -14,14 +14,31 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class EmailUtil {
-	static String fromEmail = "smcs2019.ssmg@gmail.com"; //requires valid gmail id
-	static String fromName="Media Center";
-	static String password = "Zahoogle13"; // correct password for gmail id
-
-	public static void setFrom(String from, String pass) throws UnsupportedEncodingException, MessagingException{
+	/**
+	 * The administrator email address
+	 * */
+	private static String fromEmail = ""; //requires valid gmail id
+	/**The administrator email profile name*/
+	private static String fromName="Media Center";
+	/**The administrator email password*/
+	private static String password = ""; // correct password for gmail id
+	/**
+	 * Changes the administrator email address and password
+	 * @param from The administrator email address
+	 * @param pass The administrator email password
+	 */
+	public static void setFrom(String from, String pass){
 		fromEmail=from;
 		password=pass;
 	}
+	/**
+	 * Sends an email given a recipient, a subject, and a body
+	 * @param toEmail The recipient of the email
+	 * @param subject The subject of the email
+	 * @param body The content of the email
+	 * @throws MessagingException If email sending fails
+	 * @throws UnsupportedEncodingException If email sending fails
+	 */
 	public static void sendEmail(String toEmail, String subject, String body) throws MessagingException, UnsupportedEncodingException{
 		if(toEmail.trim().equals("")){throw new MessagingException();}
 		System.out.println("TLSEmail Start");
