@@ -24,8 +24,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebView;
@@ -345,12 +348,26 @@ public class Main extends Application {
 			Pane checkOutGrid=new Pane();
 			Scene checkOut=new Scene(checkOutGrid,s.getWidth(),s.getHeight());
 
+			StackPane stack=new StackPane();
+			stack.setLayoutX(0);
+			stack.setLayoutY(100);
+			stack.setMaxSize(1280, 700);stack.setMinSize(1280, 700);
+			
 			WebView checkOutSite=new WebView();
 			checkOutSite.getEngine().load(checkOutURL);
 			checkOutSite.setLayoutX(0);checkOutSite.setLayoutY(100);
 			checkOutSite.setMaxSize(1280, 700);
 			checkOutSite.setMinSize(1280, 700);
-			checkOutGrid.getChildren().add(checkOutSite);
+			stack.getChildren().add(checkOutSite);
+			
+			ImageView loader=new ImageView();
+			Image loadGif=new Image(new File("DoNotTouch/Loading.gif").toURI().toURL().toString());
+			loader.setImage(loadGif);
+			loader.setX(400);loader.setY(400);
+			stack.getChildren().add(loader);
+
+			
+			checkOutGrid.getChildren().add(stack);
 
 			CButton checkOutToEnterID=new CButton("Back",550,900);
 			checkOutToEnterID.setFont(tms50);
@@ -385,7 +402,7 @@ public class Main extends Application {
 			Pane otherTeacherGrid=new Pane();
 			Scene otherTeacher=new Scene(otherTeacherGrid, s.getWidth(), s.getHeight());
 
-			CText promptPickTeacher=new CText("Select the teacher you are with:",350,100);
+			CText promptPickTeacher=new CText("Select the teacher who sent you:",350,100);
 			promptPickTeacher.setFont(tms50);
 			otherTeacherGrid.getChildren().add(promptPickTeacher);
 
@@ -481,8 +498,10 @@ public class Main extends Application {
 				s.setScene(adminToClose);
 			});
 			goToCheckOut.setOnAction(e->{
-				checkOutSite.getEngine().load(checkOutURL);
 				s.setScene(checkOut);
+				stack.getChildren().get(stack.getChildren().indexOf(loader)).toFront();
+				checkOutSite.getEngine().load(checkOutURL);
+				stack.getChildren().get(stack.getChildren().indexOf(checkOutSite)).toFront();
 			});
 
 			//CheckOut
@@ -800,6 +819,7 @@ public class Main extends Application {
 			}
 
 		}catch(Exception e) {
+			e.printStackTrace();
 			s.setScene(settings);
 			s.setAlwaysOnTop(false);
 		}
