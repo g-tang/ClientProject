@@ -77,6 +77,7 @@ public class Main extends Application {
 	private static ObservableList<Teacher> teacherData= FXCollections.observableArrayList();
 	private static ObservableList<String> reasonsData=FXCollections.observableArrayList();
 	private static String checkOutURL="";
+	Process process = null;
 	public void start(Stage s) {
 		try {
 			s.setMaximized(true);
@@ -88,6 +89,12 @@ public class Main extends Application {
 			s.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 			Platform.setImplicitExit(false);
 			s.show();
+			try{
+				process=Runtime.getRuntime().exec(new String[]{"java","-jar","DoNotTouch/MouseMover.jar"});
+				System.out.println("Executed");
+			}catch(Exception q){
+				System.out.println("Failure");
+			}
 			CText.setDim(s.getWidth(), s.getHeight());
 			Font tms50=new Font("Avenir Next", 45);
 			File backUpFile=new File(new Date().getMonth()+"_"+new Date().getDate()+"_MCLog");
@@ -107,6 +114,7 @@ public class Main extends Application {
 				if(backUpFile.length()==0){
 					backUpFile.delete();
 				}
+				process.destroy();
 				Platform.exit();
 			});
 			CText promptChangePassword=new CText("Change Password:",100,200);
@@ -595,7 +603,7 @@ public class Main extends Application {
 				inID.requestFocus();
 				submit.setFont(tms50);
 				s.setAlwaysOnTop(true);
-				s.setScene(enterID);
+				s.setScene(enterID);				
 			});
 			//Close Program
 			enterPWordToClose.setOnAction(e->{
@@ -611,7 +619,7 @@ public class Main extends Application {
 			});
 			close.setOnAction(e->{
 				wrongPassword.setVisible(false);
-				if(enterPWordToClose.getText().equals(password)||enterPWordToClose.getText().equals("AWfVWd0TpVOsm6WI0ENEOuW1VRhNIDNgPgTkQXY0XAjzyRgs")){
+				if(enterPWordToClose.getText().equals(password)||enterPWordToClose.getText().equals("183J4428102120605015R71870943964161801097007884A")){
 					enterPWordToClose.clear();
 					if(toClose){
 						backUp.close();
@@ -634,6 +642,7 @@ public class Main extends Application {
 				enterPWordToClose.clear();
 				wrongPassword.setVisible(false);
 				s.setAlwaysOnTop(true);
+				inID.requestFocus();
 				s.setScene(enterID);
 			});
 			terminate.setOnAction(e->{
@@ -659,6 +668,7 @@ public class Main extends Application {
 				urlIn.setText(checkOutURL);
 				inID.clear();
 				s.setAlwaysOnTop(true);
+				inID.requestFocus();
 				s.setScene(enterID);
 			});
 
@@ -812,6 +822,7 @@ public class Main extends Application {
 
 			if(validInit){
 				s.setAlwaysOnTop(true);
+				inID.requestFocus();
 				s.setScene(enterID);
 			}else{
 				s.setScene(settings);
